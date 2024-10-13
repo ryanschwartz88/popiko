@@ -1,7 +1,7 @@
 {
   "expo": {
-    "name": "HelloWorld",
-    "slug": "expo-template-default",
+    "name": "popiko",
+    "slug": "popiko",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/images/icon.png",
@@ -13,13 +13,15 @@
       "backgroundColor": "#ffffff"
     },
     "ios": {
-      "supportsTablet": true
+      "supportsTablet": true,
+      "bundleIdentifier": "com.ryanschwartz88.popiko"
     },
     "android": {
       "adaptiveIcon": {
         "foregroundImage": "./assets/images/adaptive-icon.png",
         "backgroundColor": "#ffffff"
-      }
+      },
+      "package": "com.ryanschwartz88.popiko"
     },
     "web": {
       "bundler": "metro",
@@ -31,6 +33,18 @@
     ],
     "experiments": {
       "typedRoutes": true
+    },
+    "extra": {
+      "eas": {
+        "projectId": "a43c26c9-6532-4b71-81fc-d8ced680f067"
+      }
+    },
+    "owner": "ryanschwartz88",
+    "updates": {
+      "url": "https://u.expo.dev/a43c26c9-6532-4b71-81fc-d8ced680f067"
+    },
+    "runtimeVersion": {
+      "policy": "appVersion"
     }
   }
 }
