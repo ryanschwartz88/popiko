@@ -14,7 +14,8 @@
     },
     "ios": {
       "supportsTablet": true,
-      "bundleIdentifier": "com.ryanschwartz88.popiko"
+      "bundleIdentifier": "com.ryanschwartz88.popiko",
+      "usesAppleSignIn": true
     },
     "android": {
       "adaptiveIcon": {
@@ -29,7 +30,13 @@
       "favicon": "./assets/images/favicon.png"
     },
     "plugins": [
-      "expo-router"
+      "expo-router",
+      "expo-secure-store",
+      "expo-apple-authentication",
+      "@react-native-google-signin/google-signin",
+        {
+          "iosUrlScheme": "com.googleusercontent.apps.637934050186-9qpt7fr5iheiv77br3inropn8n54h9bm"
+        }
     ],
     "experiments": {
       "typedRoutes": true
