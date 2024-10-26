@@ -1,13 +1,15 @@
-import { createClient } from "@supabase/supabase-js";
-import AsyncStorage from "@react-native-async-storage/async-storage";
+import 'react-native-url-polyfill/auto'
+import { createClient } from '@supabase/supabase-js'
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import * as SecureStore from 'expo-secure-store';
 import * as aesjs from 'aes-js';
 import 'react-native-get-random-values';
+import { AppState } from 'react-native';
 
 // As Expo's SecureStore does not support values larger than 2048
 // bytes, an AES-256 key is generated and stored in SecureStore, while
 // it is used to encrypt/decrypt values stored in AsyncStorage.
-class LargeSecureStore {
+export class LargeSecureStore {
   private async _encrypt(key: string, value: string) {
     const encryptionKey = crypto.getRandomValues(new Uint8Array(256 / 8));
 
@@ -45,19 +47,31 @@ class LargeSecureStore {
 
   async setItem(key: string, value: string) {
     const encrypted = await this._encrypt(key, value);
-
     await AsyncStorage.setItem(key, encrypted);
   }
 }
-
-const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || ''
-const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || ''
-
-export const supabase = createClient(supabaseUrl, supabaseAnonKey, {
-  auth: {
-    storage: new LargeSecureStore(),
-    autoRefreshToken: true,
-    persistSession: true,
-    detectSessionInUrl: false,
-  },
-});
+export const supabase = createClient(
+  process.env.EXPO_PUBLIC_SUPABASE_URL || "",
+  process.env.EXPO_PUBLIC_SUPABASE_ANON_KEY || "",
+  {
+    auth: {
+      storage: new LargeSecureStore(),
+      storageKey: 'supabase.session',
+      autoRefreshToken: true,
+      persistSession: true,
+      detectSessionInUrl: false,
+    },
+  })
+  
+  // Tells Supabase Auth to continuously refresh the session automatically
+  // if the app is in the foreground. When this is added, you will continue
+  // to receive `onAuthStateChange` events with the `TOKEN_REFRESHED` or
+  // `SIGNED_OUT` event if the user's session is terminated. This should
+  // only be registered once.
+  AppState.addEventListener('change', (state) => {
+    if (state === 'active') {
+      supabase.auth.startAutoRefresh()
+    } else {
+      supabase.auth.stopAutoRefresh()
+    }
+  })
