@@ -14,11 +14,8 @@ export default function TabLayout() {
 
   // Redirect to the sign-in page if the user is not authenticated
   if (!session) {
-    return <Redirect href='/(tabs)/' />;
+    return <Redirect href='/auth/CreateAccount' />;
   }
-
-  // Check if the push notifcations have changed
-  //checkAndUpdatePermissions(session.user.id);
 
   return (
     <Tabs
@@ -29,7 +26,7 @@ export default function TabLayout() {
       }}
     >
       <Tabs.Screen name="index" />
-      <Tabs.Screen name="schedule" />
+      
     </Tabs>
   );
 }

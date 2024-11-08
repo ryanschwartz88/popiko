@@ -5,6 +5,9 @@ import AppleAuth from '@/components/buttons/AppleLogin';
 import GoogleAuth from '@/components/buttons/GoogleLogin';
 import { useRouter } from 'expo-router';
 import { supabase } from '@/supabase/client';
+import { Input } from '@rneui/themed';
+import  CustomAlert from '@/components/modals/ErrorAlert';
+import NextButton from '@/assets/buttons/next-button.svg';
 
 export default function CreateAccount() {
   const [email, setEmail] = useState('');
@@ -12,17 +15,14 @@ export default function CreateAccount() {
   const [loading, setLoading] = useState(false);
   const router = useRouter();
   const [alertVisible, setAlertVisible] = useState(false);
-  const context = useProgress();
 
   const signUpWithEmail = async () => {
     setLoading(true);
     try {
       if (!email || !password) throw new Error('Email and password are required');
-      await Calendar.requestCalendarPermissionsAsync();
       const {data, error} = await supabase.auth.signUp({email, password});
       if (error) throw error;
       if (!data.session) throw new Error('User not found');
-      await saveUserDataToSupabase(data.session.user.id, context.numAffirmations, context.expoPushToken, context.checkInTime, context.usesGoogleCalendar);
       router.replace('/'); 
     } catch (error) {
       setAlertVisible(true);
@@ -33,7 +33,6 @@ export default function CreateAccount() {
   
   return (
     <Pressable style={styles.container} onPress={() => {Keyboard.dismiss()}}>
-      <BackButton />
       <Text style={styles.title}>Create an Account</Text>
       <View style={[styles.verticallySpaced, styles.mt20]}>
         <Input
