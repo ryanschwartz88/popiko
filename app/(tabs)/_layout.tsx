@@ -25,7 +25,9 @@ export default function TabLayout() {
         tabBarShowLabel: false,
       }}
     >
+      <Tabs.Screen name="schedule" />
       <Tabs.Screen name="index" />
+      <Tabs.Screen name="profile" />
       
     </Tabs>
   );

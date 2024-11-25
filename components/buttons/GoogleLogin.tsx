@@ -5,6 +5,17 @@ import { supabase } from '@/supabase/client';
 import { useRouter } from 'expo-router';
 import GoogleLogo from '@/assets/images/google-icon.svg'
 
+/* 
+
+This component is used to render a Google login button. 
+It uses the GoogleSignin module from expo-google-signin to handle the login process.
+
+TODO: 
+- Add error handling: currently have just apple alerts
+- Deal with nonce needed for authentication: currently disabled nonce check for supabase
+
+*/
+
 export default function GoogleAuth() {
   const router = useRouter();
 

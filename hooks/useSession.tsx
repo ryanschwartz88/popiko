@@ -1,13 +1,10 @@
-import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
+import React, { createContext, useContext, useState, useEffect, ReactNode, useMemo } from 'react';
 import { LargeSecureStore } from '@/supabase/client';
 import { Session } from '@supabase/supabase-js';
+import { SessionContext } from '@/types/session';
 
-interface SessionContextProps {
-  session: Session | null;
-  isLoading: boolean;
-}
 
-const SessionContext = createContext<SessionContextProps | undefined>(undefined);
+const SessionContext = createContext<SessionContext | undefined>(undefined);
 
 export const SessionProvider = ({ children }: { children: ReactNode }) => {
   const [session, setSession] = useState<Session | null>(null);
@@ -51,8 +48,10 @@ export const SessionProvider = ({ children }: { children: ReactNode }) => {
     checkSession();
   }, []);
 
+  const contextValue = useMemo(() => ({ session, isLoading }), [session, isLoading]);
+  
   return (
-    <SessionContext.Provider value={{ session, isLoading }}>
+    <SessionContext.Provider value={contextValue}>
       {children}
     </SessionContext.Provider>
   );
