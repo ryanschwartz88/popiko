@@ -7,7 +7,7 @@ import { useEvents } from "@/hooks/useEvents";
 export default function Home() {
 
     const [startDate, setStartDate] = useState(new Date());
-    const [endDate, setEndDate] = useState(new Date());
+    const [endDate, setEndDate] = useState(new Date(new Date().setDate(startDate.getDate() + 7)));
     const events = useEvents(startDate, endDate);
 
     return (

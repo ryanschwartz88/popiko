@@ -9,6 +9,7 @@ import { Input } from '@rneui/themed';
 import  CustomAlert from '@/components/modals/ErrorAlert';
 import NextButton from '@/assets/buttons/next-button.svg';
 
+
 export default function CreateAccount() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');

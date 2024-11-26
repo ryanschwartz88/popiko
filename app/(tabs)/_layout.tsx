@@ -2,6 +2,7 @@ import { Redirect, Tabs } from 'expo-router';
 import React from 'react';
 import { Text } from 'react-native';
 import { useSession } from '@/hooks/useSession';
+import { User } from '@supabase/supabase-js';
 
 export default function TabLayout() {
 
@@ -14,7 +15,7 @@ export default function TabLayout() {
 
   // Redirect to the sign-in page if the user is not authenticated
   if (!session) {
-    return <Redirect href='/auth/CreateAccount' />;
+    return <Redirect href='/auth/CreateAccount'/>;
   }
 
   return (
@@ -27,7 +28,6 @@ export default function TabLayout() {
     >
       <Tabs.Screen name="schedule" />
       <Tabs.Screen name="index" />
-      <Tabs.Screen name="profile" />
       
     </Tabs>
   );

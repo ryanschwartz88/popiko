@@ -7,7 +7,7 @@ import { useRouter } from 'expo-router';
 import { supabase } from '@/supabase/client';
 import CustomAlert from '@/components/modals/ErrorAlert';
 import { Input } from '@rneui/themed';
-import NextButton from '@/assets/next-button.svg';
+import NextButton from '@/assets/buttons/next-button.svg';
 
 export default function Login() {
   const [email, setEmail] = useState('');

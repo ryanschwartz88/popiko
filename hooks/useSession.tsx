@@ -1,51 +1,39 @@
 import React, { createContext, useContext, useState, useEffect, ReactNode, useMemo } from 'react';
-import { LargeSecureStore } from '@/supabase/client';
+import { supabase } from '@/supabase/client';
 import { Session } from '@supabase/supabase-js';
-import { SessionContext } from '@/types/session';
+import { SessionContextType } from '@/types/session';
 
 
-const SessionContext = createContext<SessionContext | undefined>(undefined);
+const SessionContext = createContext<SessionContextType | undefined>(undefined);
 
 export const SessionProvider = ({ children }: { children: ReactNode }) => {
   const [session, setSession] = useState<Session | null>(null);
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
-    const checkSession = async () => {
-      const largeSecureStore = new LargeSecureStore();
-      const storedSession = await largeSecureStore.getItem('supabase.session');
-      if (storedSession) {
-        try {
-          const parsedSession = JSON.parse(storedSession);
-          if (parsedSession && parsedSession.user) {
-            const formattedSession: Session = {
-              access_token: parsedSession.access_token,
-              refresh_token: parsedSession.refresh_token,
-              expires_at: parsedSession.expires_at,
-              user: {
-                id: parsedSession.user.id,
-                email: parsedSession.user.email,
-                last_sign_in_at: parsedSession.user.last_sign_in_at,
-                app_metadata: parsedSession.user.app_metadata,
-                user_metadata: parsedSession.user.user_metadata,
-                aud: parsedSession.user.aud,
-                created_at: parsedSession.user.created_at
-              },
-              expires_in: parsedSession.expires_in,
-              token_type: parsedSession.token_type
-            };
-            setSession(formattedSession);
-          } else {
-            console.error("Session data is not structured as expected.");
-          }
-        } catch (error) {
-          console.error("Error parsing session data:", error);
-        }
+    const initializeSession = async () => {
+      const { data, error } = await supabase.auth.getSession();
+
+      if (error) {
+        console.error("Error fetching session:", error);
+      } else {
+        setSession(data?.session || null);
       }
+
       setIsLoading(false);
     };
 
-    checkSession();
+    initializeSession();
+
+    // Subscribe to session changes
+    const { data: subscription } = supabase.auth.onAuthStateChange((event, session) => {
+      setSession(session);
+    });
+
+    // Clean up subscription on unmount
+    return () => {
+      subscription?.subscription.unsubscribe();
+    };
   }, []);
 
   const contextValue = useMemo(() => ({ session, isLoading }), [session, isLoading]);

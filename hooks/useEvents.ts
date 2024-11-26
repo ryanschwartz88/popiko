@@ -103,6 +103,7 @@ export const useEvents = (startDate: Date, endDate: Date) => {
         fetchAllEvents();
     }, [session, startDate, endDate]);
 
+    console.log(events);
     return events;
 };
 

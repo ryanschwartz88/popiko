@@ -6,8 +6,7 @@ import {useSession} from "@/hooks/useSession";
 
 export default function SignOut() {
     const handleSignOut = async () => {
-        const error = await supabase.auth.signOut();
-        router.replace('/auth/CreateAccount');
+        await supabase.auth.signOut();
     }
     return (
         <TouchableOpacity onPress={handleSignOut} style={styles.button}>

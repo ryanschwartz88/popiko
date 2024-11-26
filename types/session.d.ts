@@ -1,6 +1,6 @@
 import { Session } from '@supabase/supabase-js';
 
-export interface SessionContext {
+export interface SessionContextType {
     session: Session | null;
     isLoading: boolean;
 }
