@@ -1,8 +1,8 @@
 import React, { useEffect, useState } from "react";
 import { Text, View, StyleSheet, TouchableOpacity, Modal } from 'react-native';
-import { Calendar } from "react-native-big-calendar";
 import { router } from "expo-router";
 import { useEvents } from "@/hooks/useEvents";
+import { SafeAreaView } from "react-native-safe-area-context";
 
 export default function Home() {
 
@@ -11,10 +11,11 @@ export default function Home() {
     const events = useEvents(startDate, endDate);
 
     return (
-        <Calendar
-            events={events}
-            height={400}
-        />
+        <SafeAreaView style={styles.container}>
+            <Text>Calendar</Text>
+
+            
+        </SafeAreaView>
     )
 }
 
@@ -22,7 +23,7 @@ const styles = StyleSheet.create({
     container: {
         flex: 1,
         backgroundColor: '#fff',
-        alignItems: 'center',
+        alignItems: 'center',  
         justifyContent: 'center',
     },
 })

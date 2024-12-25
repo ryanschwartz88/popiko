@@ -2,6 +2,8 @@ import { useSession } from "@/hooks/useSession";
 import { supabase } from "@/supabase/client";
 import { useEffect, useState } from "react";
 import { CalendarEvent } from "@/types/event";
+import { isWithinInterval, addMinutes } from 'date-fns';
+import { v4 as uuidv4 } from 'uuid';
 
 export const useEvents = (startDate: Date, endDate: Date) => {
     const { session } = useSession();
@@ -11,7 +13,7 @@ export const useEvents = (startDate: Date, endDate: Date) => {
         if (session) {
             const { data, error } = await supabase
                 .from('recurring_reservations')
-                .select('user_id, start, end, day_of_week, child_id');
+                .select('user_id, start, end, day_of_week, child_id, skill_group, private, instructor_id');
 
             if (error) {
                 console.error('Error fetching events:', error);
@@ -36,6 +38,9 @@ export const useEvents = (startDate: Date, endDate: Date) => {
                                 end: endDateTime,
                                 status: isCurrentUser ? 'booked' : 'reserved',
                                 childID: event.child_id,
+                                skill_group: event.skill_group,
+                                private: event.private,
+                                instructorID: event.instructor_id
                             });
 
                         // Increment the date by 7 days for the next occurrence
@@ -56,7 +61,7 @@ export const useEvents = (startDate: Date, endDate: Date) => {
         if (session) {
             const { data, error } = await supabase
                 .from('bookings')
-                .select('user_id, child_id, date, start, end')
+                .select('user_id, child_id, date, start, end, skill_group, private, instructor_id')
                 .gte('date', startDate.toISOString().split('T')[0]) // Filter for dates >= startDate
                 .lte('date', endDate.toISOString().split('T')[0]); // Filter for dates <= endDate
     
@@ -78,6 +83,9 @@ export const useEvents = (startDate: Date, endDate: Date) => {
                         end: endDateTime,
                         status: isCurrentUser ? 'booked' : 'reserved',
                         childID: booking.child_id,
+                        skill_group: booking.skill_group,
+                        private: booking.private,
+                        instructorID: booking.instructor_id
                     };
                 });
     
@@ -90,20 +98,58 @@ export const useEvents = (startDate: Date, endDate: Date) => {
 
     useEffect(() => {
         const fetchAllEvents = async () => {
-            if (session) {
-                const [reservations, bookings] = await Promise.all([
-                    fetchReservations(),
-                    fetchBookings(),
-                ]);
+            if (!session) return;
 
-                setEvents([...bookings, ...reservations]);
+            const [reservations, bookings] = await Promise.all([
+                fetchReservations(),
+                fetchBookings(),
+            ]);
+
+            const combinedEvents = [...bookings, ...reservations];
+            const newEvents : CalendarEvent[] = [];
+            const now = new Date();
+
+            const summerMonths = [5, 6, 7]; // June - August
+            const isSummer = summerMonths.includes(now.getMonth());
+
+            const weekdaySchedule = {
+                days: ['Mon', 'Tue', 'Thu'],
+                times: ['13:15', '14:00', '14:45', '15:30', '16:15', '17:15'],
+                duration: 30, // minutes
+            };
+
+            const weekendSchedule = {
+                days: ['Sat', 'Sun'],
+                times: ['10:15', '11:00', '11:45', '12:30', '13:15', '14:00', '14:45', '15:45', '16:30'],
+                duration: 30, // minutes
+            };
+
+            const schedules = isSummer
+                ? [weekdaySchedule, weekendSchedule]
+                : [weekendSchedule];
+
+            for (const schedule of schedules) {
+                for (const day of schedule.days) {
+                    for (const timeSlot of generateTimeSlots(now, schedule.times, schedule.duration)) {
+                        if (isTimeSlotAvailable(combinedEvents, timeSlot.start, timeSlot.end)) {
+                            newEvents.push({
+                                id: uuidv4(),
+                                title: `${formatTime(timeSlot.start)} to ${formatTime(timeSlot.end)}`,
+                                start: timeSlot.start,
+                                end: timeSlot.end,
+                                status: 'available',
+                            });
+                        }
+                    }
+                }
             }
+
+            setEvents([...combinedEvents, ...newEvents]);
         };
 
         fetchAllEvents();
     }, [session, startDate, endDate]);
 
-    console.log(events);
     return events;
 };
 
@@ -129,4 +175,21 @@ const formatTime = (date: Date): string => {
     const formattedMinutes = minutes < 10 ? `0${minutes}` : minutes;
 
     return `${formattedHours}:${formattedMinutes} ${period}`;
+};
+
+// Assume helper functions are defined to handle date operations and check for overlaps.
+const isTimeSlotAvailable = (existingEvents: CalendarEvent[], start: Date, end: Date) => {
+    return !existingEvents.some(event =>
+        isWithinInterval(start, { start: event.start, end: event.end }) ||
+        isWithinInterval(end, { start: event.start, end: event.end })
+    );
+};
+
+const generateTimeSlots = (baseDate: Date, times: string[], duration: number) => {
+    return times.map(time => {
+        const [hours, minutes] = time.split(':').map(Number);
+        const start = new Date(baseDate.setHours(hours, minutes));
+        const end = addMinutes(start, duration);
+        return { start, end };
+    });
 };

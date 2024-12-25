@@ -4,5 +4,8 @@ export interface CalendarEvent {
   start: Date;
   end: Date;
   status: 'available' | 'booked' | 'reserved';
-  childID: string;
+  skill_group?: 'waterSafety' | 'freestyle' | 'backstroke' | 'breaststroke' | 'butterfly';
+  private?: boolean;
+  childID?: string;
+  instructorID?: string;
 }
