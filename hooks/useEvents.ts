@@ -143,7 +143,6 @@ export const useEvents = (startDate: Date, endDate: Date) => {
                     if (schedule.days.includes(currentDayName)) {
                         for (const timeSlot of generateTimeSlots(date, schedule.times, schedule.duration)) {
                             if (isTimeSlotAvailable(filteredEvents, timeSlot.start, timeSlot.end)) {
-                                console.log(timeSlot.start.toLocaleTimeString('en-US'), timeSlot.end.toLocaleTimeString('en-US'));
                                 newEvents.push({
                                     id: uuidv4(),
                                     title: `${formatTime(timeSlot.start)} to ${formatTime(timeSlot.end)}`,
