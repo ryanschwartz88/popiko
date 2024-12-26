@@ -91,6 +91,7 @@ export const useEvents = (startDate: Date, endDate: Date) => {
     
                 return formattedBookings;
             }
+
         }
         return [];
     };
@@ -105,12 +106,11 @@ export const useEvents = (startDate: Date, endDate: Date) => {
                 fetchBookings(),
             ]);
 
-            const combinedEvents = [...bookings, ...reservations];
-            const newEvents : CalendarEvent[] = [];
-            const now = new Date();
+
+            const newEvents: CalendarEvent[] = [];
 
             const summerMonths = [5, 6, 7]; // June - August
-            const isSummer = summerMonths.includes(now.getMonth());
+            const isSummer = summerMonths.includes(startDate.getMonth());
 
             const weekdaySchedule = {
                 days: ['Mon', 'Tue', 'Thu'],
@@ -128,23 +128,37 @@ export const useEvents = (startDate: Date, endDate: Date) => {
                 ? [weekdaySchedule, weekendSchedule]
                 : [weekendSchedule];
 
-            for (const schedule of schedules) {
-                for (const day of schedule.days) {
-                    for (const timeSlot of generateTimeSlots(now, schedule.times, schedule.duration)) {
-                        if (isTimeSlotAvailable(combinedEvents, timeSlot.start, timeSlot.end)) {
-                            newEvents.push({
-                                id: uuidv4(),
-                                title: `${formatTime(timeSlot.start)} to ${formatTime(timeSlot.end)}`,
-                                start: timeSlot.start,
-                                end: timeSlot.end,
-                                status: 'available',
-                            });
+            const filteredEvents = [...bookings, ...reservations].filter(event => {
+                const eventDate = new Date(event.start);
+                const eventDay = eventDate.toLocaleDateString('en-US', { weekday: 'short' });
+                
+                return schedules.some(schedule => schedule.days.includes(eventDay));
+            });
+
+            // Iterate through each day in the range
+            for (let date = new Date(startDate); date <= endDate; date.setDate(date.getDate() + 1)) {
+                const currentDayName = date.toLocaleDateString('en-US', { weekday: 'short' });
+
+                for (const schedule of schedules) {
+                    if (schedule.days.includes(currentDayName)) {
+                        for (const timeSlot of generateTimeSlots(date, schedule.times, schedule.duration)) {
+                            if (isTimeSlotAvailable(filteredEvents, timeSlot.start, timeSlot.end)) {
+                                console.log(timeSlot.start.toLocaleTimeString('en-US'), timeSlot.end.toLocaleTimeString('en-US'));
+                                newEvents.push({
+                                    id: uuidv4(),
+                                    title: `${formatTime(timeSlot.start)} to ${formatTime(timeSlot.end)}`,
+                                    start: timeSlot.start,
+                                    end: timeSlot.end,
+                                    status: 'available',
+                                });
+                            }
                         }
                     }
                 }
             }
 
-            setEvents([...combinedEvents, ...newEvents]);
+
+            setEvents([...newEvents, ...filteredEvents]);
         };
 
         fetchAllEvents();
