@@ -6,6 +6,7 @@ import * as SplashScreen from 'expo-splash-screen';
 import { useEffect } from 'react';
 import 'react-native-reanimated';
 import { Inter_400Regular, Inter_700Bold } from '@expo-google-fonts/inter';
+import { AccountProvider } from '@/hooks/useAccount';
 
 
 
@@ -31,10 +32,12 @@ export default function RootLayout() {
   return (
     <ThemeProvider value={DefaultTheme}>
       <SessionProvider>
-        <Stack screenOptions={{ headerShown: false }}>
-          <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
-          <Stack.Screen name="+not-found" />
-        </Stack>
+        <AccountProvider>
+          <Stack screenOptions={{ headerShown: false }}>
+            <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
+            <Stack.Screen name="+not-found" />
+          </Stack>
+        </AccountProvider>
       </SessionProvider>
     </ThemeProvider>
   );

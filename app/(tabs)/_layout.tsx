@@ -2,7 +2,6 @@ import { Redirect, Tabs } from 'expo-router';
 import React from 'react';
 import { Text } from 'react-native';
 import { useSession } from '@/hooks/useSession';
-import { User } from '@supabase/supabase-js';
 
 export default function TabLayout() {
 
@@ -26,9 +25,8 @@ export default function TabLayout() {
         tabBarShowLabel: false,
       }}
     >
-      <Tabs.Screen name="schedule" />
       <Tabs.Screen name="index" />
-      
+      <Tabs.Screen name="schedule" />
     </Tabs>
   );
 }

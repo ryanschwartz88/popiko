@@ -8,7 +8,7 @@ const Calendar = () => {
   const currentDate = new Date();
   const [startDate, setStartDate] = useState(new Date(currentDate));
   const [endDate, setEndDate] = useState(new Date(startDate.getDate() + 6));
-  const events = useEvents(startDate, endDate);
+  const events = useEvents(startDate);
 
   const handleNext = () => {
     // Logic to navigate to the next day/week

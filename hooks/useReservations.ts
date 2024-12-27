@@ -5,52 +5,64 @@ import { CalendarEvent } from "@/types/event";
 import { isWithinInterval, addMinutes } from 'date-fns';
 import { v4 as uuidv4 } from 'uuid';
 
-export const useEvents = (startDate: Date, instructorAccount?: boolean) => {
+
+
+/* 
+    This hook fetches recurring reservations from Supabase
+    it will only be used for admin when onboarding new clients
+
+    Also need to add insertion of new reservations
+    
+*/
+
+export const useReservations = (startDate: Date, endDate: Date) => {
     const { session } = useSession();
     const [events, setEvents] = useState<CalendarEvent[]>([]);
 
 
-    const fetchBookings = async () => {
+    const fetchReservations = async () => {
         if (session) {
             const { data, error } = await supabase
-                .from('bookings')
-                .select(`
-                    *,
-                    children(name)
-                `)
-                .gte('date', startDate.toISOString().split('T')[0]);
+                .from('recurring_reservations')
+                .select('user_id, start, end, day_of_week, child_id, skill_group, private, instructor_id');
 
-    
             if (error) {
-                console.error('Error fetching bookings:', error);
-                return [];
+                console.error('Error fetching events:', error);
             }
-    
+
             if (data) {
-                const formattedBookings: CalendarEvent[] = data.map((booking: any) => {
-                    const isCurrentUser = instructorAccount ? booking.instructor_id === session?.user.id : booking.user_id === session?.user.id || booking.instructor_id === session?.user.id;
-                    const startDateTime = new Date(`${booking.date}T${booking.start_time}`);
-                    const endDateTime = new Date(`${booking.date}T${booking.end_time}`);
+                // Generate all occurrences of an event between startDate and endDate
+                function generateOccurrences(event: any): CalendarEvent[] {
+                    const occurrences: CalendarEvent[] = [];
+                    let occurrenceDate = getNextDateForDay(event.day_of_week, startDate);
 
-                    return {
-                        id: booking.id,
-                        user_id: booking.user_id,
-                        title: `${formatTime(startDateTime)} to ${formatTime(endDateTime)}`,
-                        start: startDateTime,
-                        end: endDateTime,
-                        cost: booking.cost,
-                        status: isCurrentUser ? 'booked' : 'reserved',
-                        childID: booking.child_id,
-                        skill_group: booking.skill_group,
-                        private: booking.private,
-                        instructorID: booking.instructor_id,
-                        childName: booking.children.name
-                    };
-                });
-    
-                return formattedBookings;
+                    // Add events weekly until we exceed endDate
+                    while (occurrenceDate <= endDate) {
+                        const startDateTime = new Date(`${occurrenceDate.toISOString().split('T')[0]}T${event.start}`);
+                        const endDateTime = new Date(`${occurrenceDate.toISOString().split('T')[0]}T${event.end}`);
+                        const isCurrentUser = event.user_id === session?.user.id;
+
+                        occurrences.push({
+                                id: event.user_id,
+                                title: `${formatTime(startDateTime)} to ${formatTime(endDateTime)}`,
+                                start: startDateTime,
+                                end: endDateTime,
+                                status: isCurrentUser ? 'booked' : 'reserved',
+                                childID: event.child_id,
+                                skill_group: event.skill_group,
+                                instructorID: event.instructor_id
+                            });
+
+                        // Increment the date by 7 days for the next occurrence
+                        occurrenceDate.setDate(occurrenceDate.getDate() + 7);
+                    }
+
+                    return occurrences;
+                }
+            
+                // Map through the data and generate occurrences for each event
+                return data.flatMap((event) => generateOccurrences(event));
             }
-
         }
         return [];
     };
@@ -60,10 +72,9 @@ export const useEvents = (startDate: Date, instructorAccount?: boolean) => {
         const fetchAllEvents = async () => {
             if (!session) return;
 
-            const [bookings] = await Promise.all([
-                fetchBookings(),
+            const [reservations] = await Promise.all([
+                fetchReservations(),
             ]);
-
 
 
             const newEvents: CalendarEvent[] = [];
@@ -87,7 +98,7 @@ export const useEvents = (startDate: Date, instructorAccount?: boolean) => {
                 ? [weekdaySchedule, weekendSchedule]
                 : [weekendSchedule];
 
-            const filteredEvents = [...bookings].filter(event => {
+            const filteredEvents = [...reservations].filter(event => {
                 const eventDate = new Date(event.start);
                 const eventDay = eventDate.toLocaleDateString('en-US', { weekday: 'short' });
                 
@@ -98,7 +109,6 @@ export const useEvents = (startDate: Date, instructorAccount?: boolean) => {
             const endDate = filteredEvents.reduce((latest, event) => {
                 return event.start > latest ? event.start : latest;
             }, new Date(startDate));
-
 
             
             // Iterate through each day in the range
@@ -131,6 +141,20 @@ export const useEvents = (startDate: Date, instructorAccount?: boolean) => {
 
     return events;
 };
+
+// Utility to calculate the next date for a specific day_of_week
+function getNextDateForDay(dayOfWeek: string, fromDate: Date): Date {
+    const daysOfWeek = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
+    const fromDateIndex = fromDate.getDay(); // 0 (Sunday) to 6 (Saturday)
+    const targetIndex = daysOfWeek.indexOf(dayOfWeek);
+
+    // Calculate days to add to reach the target day
+    const daysToAdd = (targetIndex - fromDateIndex + 7) % 7;
+    const targetDate = new Date(fromDate);
+    targetDate.setDate(fromDate.getDate() + daysToAdd);
+
+    return targetDate;
+}
 
 const formatTime = (date: Date): string => {
     const hours = date.getHours();

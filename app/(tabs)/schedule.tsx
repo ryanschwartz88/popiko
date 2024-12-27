@@ -1,100 +1,102 @@
 import React, { useState, useMemo, useCallback } from 'react';
 import {
   ExpandableCalendar,
-  TimelineEventProps,
-  TimelineList,
   CalendarProvider,
-  TimelineProps,
-  CalendarUtils
+  AgendaList,
 } from 'react-native-calendars';
-
+import { StyleSheet } from 'react-native';
 import { useEvents } from '@/hooks/useEvents';
 import { CalendarEvent } from '@/types/event';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import { useAccount } from '@/hooks/useAccount';
+import { useSession } from '@/hooks/useSession';
+import AgendaItem from '@/components/calendar/AgendaItem';
 
-const INITIAL_TIME = { hour: 9, minutes: 0 };
+const CalendarScreen = () => {
+  const { currentAccountUuid, accountData } = useAccount();
+  const { session } = useSession();
+  const parentAccount = currentAccountUuid === session?.user.id;
 
-const TimelineCalendarScreen = () => {
-  const [currentDate, setCurrentDate] = useState(
-    CalendarUtils.getCalendarDateString(new Date())
-  );
+  const today = useMemo(() => new Date(), []);
+  const events: CalendarEvent[] = useEvents(today);
 
-  // Calculate the current month's start and end dates
-  const getMonthRange = (date: Date) => {
-    const start = new Date(date.getFullYear(), date.getMonth(), 1);
-    const end = new Date(date.getFullYear(), date.getMonth() + 1, 0); 
-    return { start, end };
-  };
+  // Filter events for the current account
+  const filteredEvents = useMemo(() => {
+    if (parentAccount) {
+      return events.filter((event) => event.user_id === currentAccountUuid);
+    }
+    return events.filter((event) => event.childID === currentAccountUuid);
+  }, [events, parentAccount, currentAccountUuid]);
 
-  const { start, end } = useMemo(() => getMonthRange(new Date()), [getMonthRange]);
-
-  // Ensure `useEvents` is stable
-  const events: CalendarEvent[] = useEvents(start, end);
-
-  const eventsByDate = () => {
-    console.log('Recomputing eventsByDate...');
-    const grouped: { [key: string]: TimelineEventProps[] } = {};
-    events.forEach(event => {
-      const date = CalendarUtils.getCalendarDateString(event.start);
+  // Group events by date for `AgendaList`
+  const groupedEvents = useMemo(() => {
+    const grouped: Record<string, CalendarEvent[]> = {};
+    
+    // Group events by date
+    filteredEvents.forEach((event) => {
+      const date = event.start.toLocaleDateString('en-CA'); // Format the date as 'YYYY-MM-DD'
       if (!grouped[date]) {
         grouped[date] = [];
       }
-      grouped[date].push({
-        ...event,
-        start: event.start.toISOString(),
-        end: event.end.toISOString(),
-      });
+      grouped[date].push(event);
     });
-    return grouped;
-  };
+  
+    // Convert to an array and sort by date
+    return Object.entries(grouped)
+      .map(([title, data]) => ({ title, data }))
+      .sort((a, b) => new Date(a.title).getTime() - new Date(b.title).getTime());
+  }, [filteredEvents]);
+  
 
-  const marked = () => {
-    console.log('Recomputing marked dates...');
-    const newMarked: { [key: string]: { marked: boolean } } = {};
-    Object.keys(eventsByDate).forEach(date => {
-      newMarked[date] = { marked: true };
+  const renderItem = useCallback(({ item }: { item: CalendarEvent }) => {
+    return <AgendaItem item={item} />;
+  }, []);
+
+
+  // Convert events to marked dates
+  const markedDates = useMemo(() => {
+    const dates: Record<string, { marked: boolean}> = {};
+    filteredEvents.forEach((event) => {
+      dates[event.start.toLocaleDateString('en-CA')] = {
+        marked: true,
+      };
     });
-    return newMarked;
-  };
-
-  const onDateChanged = (date: string, source: string) => {
-    console.log('onDateChanged:', date, source);
-    setCurrentDate(date);
-  };
-
-  const onMonthChange = (month: any, updateSource: any) => {
-    console.log('onMonthChange:', month, updateSource);
-  };
-
-  const timelineProps: Partial<TimelineProps> = {
-    format24h: false,
-    unavailableHours: [{ start: 0, end: 9 }, { start: 20, end: 24 }],
-    start: 9,
-    end: 20,
-    overlapEventsSpacing: 8,
-    rightEdgeSpacing: 24,
-  };
+    return dates;
+  }, [filteredEvents]);
 
   return (
-    <SafeAreaView style={{ flex: 1 }}>
-    <CalendarProvider
-      date={currentDate}
-      onDateChanged={onDateChanged}
-      onMonthChange={onMonthChange}
-      showTodayButton
-      disabledOpacity={0.6}
-    >
-      <ExpandableCalendar firstDay={1} markedDates={marked()} />
-      <TimelineList
-        events={eventsByDate()}
-        timelineProps={timelineProps}
-        showNowIndicator
-        scrollToFirst
-        initialTime={INITIAL_TIME}
-      />
-    </CalendarProvider>
+    <SafeAreaView style={styles.container}>
+      <CalendarProvider
+        date={today.toLocaleDateString('en-CA')}
+        showTodayButton={markedDates[today.toLocaleDateString('en-CA')]?.marked}
+      >
+        <ExpandableCalendar
+          firstDay={1} // Week starts on Monday
+          markedDates={markedDates}
+          disableVirtualization
+          closeOnDayPress
+        />
+        <AgendaList
+          sections={groupedEvents}
+          renderItem={renderItem}
+          sectionStyle={styles.section}
+        />
+      </CalendarProvider>
     </SafeAreaView>
   );
 };
 
-export default TimelineCalendarScreen;
+export default CalendarScreen;
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    backgroundColor: 'white',
+  },
+  section: {
+    backgroundColor: '#f0f0f0',
+    color: 'grey',
+    paddingVertical: 8,
+    paddingHorizontal: 16,
+  },
+});
