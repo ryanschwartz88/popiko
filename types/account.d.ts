@@ -6,6 +6,7 @@ export type AccountContextType = {
 
 export type userData = {
     plan?: string;
+    created_at: Date;
     accounts: accountData[];
 };
 

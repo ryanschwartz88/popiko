@@ -1,5 +1,5 @@
 import React, { createContext, useContext, useEffect, useState, ReactNode } from 'react';
-import { useSession } from '@/hooks/useSession';
+import { useSession } from '@/hooks/account/useSession';
 import { supabase } from '@/supabase/client';
 import { AccountContextType, userData, accountData } from '@/types/account';
 
@@ -17,7 +17,7 @@ export const AccountProvider = ({ children }: { children: ReactNode }) => {
       if (session) {
         const { data, error } = await supabase
           .from('parents')
-          .select('id, name, plan, skill_group, last_obtained_skill')
+          .select('id, name, plan, skill_group, last_obtained_skill, created_at')
           .eq('id', session.user.id)
           .single();
 
@@ -47,6 +47,7 @@ export const AccountProvider = ({ children }: { children: ReactNode }) => {
                 });
                 const user: userData = {
                     plan: data.plan,
+                    created_at: data.created_at,
                     accounts: accounts,
                 };
                 setAccountData(user);

@@ -1,4 +1,4 @@
-import { useEvents } from '@/hooks/useEvents';
+import { useEvents } from '@/hooks/event/useEvents';
 import React, { useState, useEffect } from 'react';
 import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
 import { CalendarProvider } from 'react-native-calendars';

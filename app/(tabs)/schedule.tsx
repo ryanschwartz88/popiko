@@ -5,14 +5,14 @@ CalendarProvider,
 AgendaList,
 } from 'react-native-calendars';
 import { StyleSheet, View } from 'react-native';
-import { useEvents } from '@/hooks/useEvents';
+import { useEvents } from '@/hooks/event/useEvents';
 import { CalendarEvent } from '@/types/event';
-import { SafeAreaView } from 'react-native-safe-area-context';
-import { useAccount } from '@/hooks/useAccount';
-import { useSession } from '@/hooks/useSession';
+import { useAccount } from '@/hooks/account/useAccount';
+import { useSession } from '@/hooks/account/useSession';
 import AgendaItem from '@/components/calendar/AgendaItem';
 import { Text } from '@rneui/themed';
 import AccountDropdown from '@/components/modals/AccountDropdown';
+import MonthlyTab from '@/components/modals/MonthlyTab';
 
 const CalendarScreen = () => {
 const { currentAccountUuid } = useAccount();
@@ -72,18 +72,20 @@ return (
     <View style={styles.container}>
         <View style={styles.header}>
             <AccountDropdown buttonRef={dropdownButtonRef}/>
-            <Text style={{ fontSize: 18, fontWeight: 'bold' }}>Schedule</Text>
+            <MonthlyTab />
         </View>
         
         <CalendarProvider
             date={today.toLocaleDateString('en-CA')}
             showTodayButton={markedDates[today.toLocaleDateString('en-CA')]?.marked}
+            style={styles.calendar}
         >
             <ExpandableCalendar
-            firstDay={1} // Week starts on Monday
-            markedDates={markedDates}
-            disableVirtualization
-            closeOnDayPress
+                firstDay={1} // Week starts on Monday
+                markedDates={markedDates}
+                disableVirtualization
+                closeOnDayPress
+                hideArrows
             />
             {groupedEvents.length > 0 ? (
                 <AgendaList
@@ -104,7 +106,7 @@ export default CalendarScreen;
 const styles = StyleSheet.create({
 container: {
     flex: 1,
-    backgroundColor: 'white',
+    backgroundColor: '#fff',
     alignItems: 'center',
 },
 header: {
@@ -121,5 +123,9 @@ section: {
     color: 'grey',
     paddingVertical: 8,
     paddingHorizontal: 16,
-}
+},
+calendar: {
+    backgroundColor: '#fff',
+    flex: 1,
+},
 });

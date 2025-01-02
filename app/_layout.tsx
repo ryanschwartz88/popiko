@@ -1,4 +1,4 @@
-import { SessionProvider } from '@/hooks/useSession';
+import { SessionProvider } from '@/hooks/account/useSession';
 import { DefaultTheme, ThemeProvider } from '@react-navigation/native';
 import { useFonts } from 'expo-font';
 import { Stack } from 'expo-router';
@@ -6,7 +6,7 @@ import * as SplashScreen from 'expo-splash-screen';
 import { useEffect } from 'react';
 import 'react-native-reanimated';
 import { Inter_400Regular, Inter_700Bold } from '@expo-google-fonts/inter';
-import { AccountProvider } from '@/hooks/useAccount';
+import { AccountProvider } from '@/hooks/account/useAccount';
 
 
 

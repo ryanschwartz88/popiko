@@ -10,7 +10,7 @@ import {
   TouchableOpacity,
 } from "react-native";
 import Icon from "react-native-vector-icons/MaterialCommunityIcons";
-import { useAccount } from "@/hooks/useAccount";
+import { useAccount } from "@/hooks/account/useAccount";
 
 const AccountDropdown: React.FC<{ buttonRef: RefObject<TouchableOpacity> }> = ({ buttonRef }) => {
   const { currentAccountUuid, setCurrentAccountUuid, accountData } = useAccount();

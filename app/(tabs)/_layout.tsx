@@ -1,7 +1,7 @@
 import { Redirect, Tabs } from 'expo-router';
 import React from 'react';
 import { Text } from 'react-native';
-import { useSession } from '@/hooks/useSession';
+import { useSession } from '@/hooks/account/useSession';
 
 export default function TabLayout() {
 

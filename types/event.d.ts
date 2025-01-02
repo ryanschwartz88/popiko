@@ -4,7 +4,7 @@ export interface CalendarEvent {
   title: string;
   start: Date;
   end: Date;
-  status: 'available' | 'booked' | 'reserved';
+  status: 'available' | 'booked' | 'unavailable' | 'cancelled' | 'completed' | 'noshow';
   cost?: number;
   skill_group?: 'waterSafety' | 'freestyle' | 'backstroke' | 'breaststroke' | 'butterfly';
   childID?: string;
