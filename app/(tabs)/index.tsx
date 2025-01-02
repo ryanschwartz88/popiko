@@ -1,8 +1,8 @@
 import React from "react";
-import { Text, View, StyleSheet, TouchableOpacity, Modal } from 'react-native';
+import { Text, View, StyleSheet } from 'react-native';
 import SignOut from "@/components/buttons/SignOut";
 
-export default function Home() {
+export default function CurriculumPathway() {
 
     return (
         <View style={styles.container}>
