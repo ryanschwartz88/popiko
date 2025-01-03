@@ -5,6 +5,8 @@ import { isWithinInterval, addMinutes } from 'date-fns';
 import { v4 as uuidv4 } from 'uuid';
 import { formatTime } from "@/hooks/event/formatTime";
 
+/* NEED TO BE UPDATED TO ACCOUNT FOR INSTRUCTOR AVAILABILITY */
+
 export const useAvailable = (events: CalendarEvent[], startDate: Date) => {
     const { session } = useSession();
     const [available, setAvailable] = useState<CalendarEvent[]>([]);

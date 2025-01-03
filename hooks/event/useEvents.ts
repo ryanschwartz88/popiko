@@ -100,7 +100,7 @@ export const useEvents = (startDate: Date, endDate?: Date, instructorAccount: bo
         };
 
         fetchAllEvents();
-    }, [session, startDate]);
+    }, [session, startDate, endDate, instructorAccount]);
 
     return events;
 };
