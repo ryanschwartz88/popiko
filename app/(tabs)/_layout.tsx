@@ -26,7 +26,7 @@ export default function TabLayout() {
       }}
     >
       <Tabs.Screen name="index" />
-      <Tabs.Screen name="schedule" />
+      <Tabs.Screen name="course" />
     </Tabs>
   );
 }

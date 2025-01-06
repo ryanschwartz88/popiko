@@ -4,6 +4,7 @@ import { CalendarEvent } from "@/types/event";
 import { isWithinInterval, addMinutes } from 'date-fns';
 import { v4 as uuidv4 } from 'uuid';
 import { formatTime } from "@/hooks/event/formatTime";
+import { weekdaySchedule, weekendSchedule } from "@/constants/schedule";
 
 /* NEED TO BE UPDATED TO ACCOUNT FOR INSTRUCTOR AVAILABILITY */
 
@@ -21,18 +22,6 @@ export const useAvailable = (events: CalendarEvent[], startDate: Date) => {
 
             const summerMonths = [5, 6, 7]; // June - August
             const isSummer = summerMonths.includes(startDate.getMonth());
-
-            const weekdaySchedule = {
-                days: ['Mon', 'Tue', 'Thu'],
-                times: ['13:15', '14:00', '14:45', '15:30', '16:15', '17:15'],
-                duration: 30, // minutes
-            };
-
-            const weekendSchedule = {
-                days: ['Sat', 'Sun'],
-                times: ['10:15', '11:00', '11:45', '12:30', '13:15', '14:00', '14:45', '15:45', '16:30'],
-                duration: 30, // minutes
-            };
 
             const schedules = isSummer
                 ? [weekdaySchedule, weekendSchedule]

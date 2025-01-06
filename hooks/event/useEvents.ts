@@ -2,7 +2,7 @@ import { useSession } from "@/hooks/account/useSession";
 import { supabase } from "@/supabase/client";
 import { useEffect, useState } from "react";
 import { CalendarEvent } from "@/types/event";
-import { formatTime } from "@/hooks/event/formatTime";
+import { weekdaySchedule, weekendSchedule } from "@/constants/schedule";
 
 export const useEvents = (startDate: Date, endDate?: Date, instructorAccount: boolean = false) => {
     const { session } = useSession();
@@ -39,7 +39,7 @@ export const useEvents = (startDate: Date, endDate?: Date, instructorAccount: bo
                     return {
                         id: booking.id,
                         user_id: booking.user_id,
-                        title: `${formatTime(startDateTime)} to ${formatTime(endDateTime)}`,
+                        title: `Lesson for ${booking.children.name}`,
                         start: startDateTime,
                         end: endDateTime,
                         cost: booking.cost,
@@ -70,18 +70,6 @@ export const useEvents = (startDate: Date, endDate?: Date, instructorAccount: bo
 
             const summerMonths = [5, 6, 7]; // June - August
             const isSummer = summerMonths.includes(startDate.getMonth());
-
-            const weekdaySchedule = {
-                days: ['Mon', 'Tue', 'Thu'],
-                times: ['13:15', '14:00', '14:45', '15:30', '16:15', '17:15'],
-                duration: 30, // minutes
-            };
-
-            const weekendSchedule = {
-                days: ['Sat', 'Sun'],
-                times: ['10:15', '11:00', '11:45', '12:30', '13:15', '14:00', '14:45', '15:45', '16:30'],
-                duration: 30, // minutes
-            };
 
             const schedules = isSummer
                 ? [weekdaySchedule, weekendSchedule]

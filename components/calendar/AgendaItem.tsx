@@ -14,12 +14,6 @@ const AgendaItem = ({ item }: { item: CalendarEvent }) => {
     Alert.alert('NOOOOOO');
   }, []);
 
-  const itemPressed = useCallback(() => {
-    if (item) {
-      Alert.alert(item.title);
-    }
-  }, [item]);
-
   if (!item) {
     return (
       <View style={styles.emptyItem}>
@@ -36,12 +30,12 @@ const AgendaItem = ({ item }: { item: CalendarEvent }) => {
 
 
   return (
-    <TouchableOpacity onPress={itemPressed} style={styles.item}>
+    <TouchableOpacity activeOpacity={1.0} style={styles.item}>
       <View>
         <Text style={styles.itemHourText}>{startTime.toLowerCase()}</Text>
         <Text style={styles.itemDurationText}>30m</Text>
       </View>
-      <Text style={styles.itemTitleText}>Lesson for {item.childName}</Text>
+      <Text style={styles.itemTitleText}>{item.title}</Text>
       <View style={styles.itemButtonContainer}>
         <Button color="grey" title="Reschedule" onPress={buttonPressed} />
       </View>

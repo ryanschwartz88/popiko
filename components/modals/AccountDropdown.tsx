@@ -10,10 +10,10 @@ import {
   TouchableOpacity,
 } from "react-native";
 import Icon from "react-native-vector-icons/MaterialCommunityIcons";
-import { useAccount } from "@/hooks/account/useAccount";
+import { useSession } from "@/hooks/account/useSession";
 
 const AccountDropdown: React.FC<{ buttonRef: RefObject<TouchableOpacity> }> = ({ buttonRef }) => {
-  const { currentAccountUuid, setCurrentAccountUuid, accountData } = useAccount();
+  const { currentAccountUuid, setCurrentAccountUuid, accountData } = useSession();
   const accounts = accountData?.accounts || [];
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [buttonLayout, setButtonLayout] = useState<LayoutRectangle | null>(null);
