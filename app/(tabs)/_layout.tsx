@@ -50,8 +50,8 @@ export default function TabLayout() {
 		name="course"
 		options={{
 		  tabBarIcon: ({ focused, size }) => (
-			<FontAwesome5
-			  name={focused ? 'map-marker-alt' : 'map-marker'}
+			<MaterialCommunityIcons
+			  name={focused ? 'map-marker' : 'map-marker-outline'}
 			  size={size}
 			  color="#fff"
 			/>

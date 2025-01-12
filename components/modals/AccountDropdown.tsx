@@ -86,6 +86,7 @@ const AccountDropdown: React.FC<{ buttonRef: RefObject<TouchableOpacity> }> = ({
 							<View style={styles.divider} />
 							<FlatList
 								data={accounts.filter((account) => account.id !== currentAccountUuid)}
+								scrollEnabled={false}
 								keyExtractor={(item) => item.id.toString()}
 								renderItem={({ item, index }) => (
 									<Pressable

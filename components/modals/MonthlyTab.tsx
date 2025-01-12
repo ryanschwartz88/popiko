@@ -317,7 +317,7 @@ const styles = StyleSheet.create({
 	accordionHeaderAmount: {
 		fontSize: 16,
 		fontWeight: 'bold',
-		color: 'green',
+		color: '#007BFF',
 		marginRight: 10,
 	},
 	accordionHeaderAmountContainer: {
@@ -386,11 +386,11 @@ const styles = StyleSheet.create({
 	totalAmount: {
 		fontSize: 16,
 		fontWeight: 'bold',
-		color: 'green',
+		color: '#007BFF',
 	},
 	discountText: {
 		fontWeight: 'bold',
-		color: 'green', 
+		color: '#007BFF', 
 	},
 	  
 });

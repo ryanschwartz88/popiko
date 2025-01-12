@@ -17,14 +17,14 @@ export default function SignOut() {
 
 const styles = StyleSheet.create({
     button: {
-        backgroundColor: '#2C59B5',
+        backgroundColor: '#fff',
         paddingVertical: 10,
         paddingHorizontal: 20,
         borderRadius: 5,
         alignItems: 'center',
     },
     buttonText: {
-        color: '#fff',
+        color: '#007AFF',
         fontSize: 16,
         fontWeight: 'bold',
     },

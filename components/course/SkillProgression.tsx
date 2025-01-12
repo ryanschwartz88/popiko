@@ -1,4 +1,4 @@
-import React, { useRef, useState } from "react";
+import React, { useRef, useState, useMemo } from "react";
 import {
 	SectionList,
 	StyleSheet,
@@ -8,12 +8,11 @@ import {
 } from "react-native";
 import { sections } from "@/constants/childrenSkills";
 import WaterSkill from "@/components/course/WaterSkill";
-import ReviewButton from "./ReviewButton";
+import ReviewButton from "@/components/course/ReviewButton";
 
 const shadesOfBlue = ["#007AFF", "#0056D2", "#0046AA", "#003580", "#002966"];
 
-
-const SwimProgress : React.FC<{ skillGroup: string | undefined, lastSkill: string | undefined }> = ({ skillGroup, lastSkill }) => {
+const SwimProgress: React.FC<{ skillGroup: string | undefined, lastSkill: string | undefined }> = ({ skillGroup, lastSkill }) => {
 	const [currentHeader, setCurrentHeader] = useState<string>(sections[0].title);
 	const [currentUnit, setCurrentUnit] = useState<string>("");
 	const viewableItemsChangedRef = useRef<((arg0: { viewableItems: ViewToken[] }) => void) | null>(null);
@@ -66,21 +65,19 @@ const SwimProgress : React.FC<{ skillGroup: string | undefined, lastSkill: strin
 		if (total === 1 || total === 0) {
 			return { offsetX: 0 };
 		}
-		const progress = (index + 1) / (total);
-
+		const progress = (index + 1) / total;
 		const angle = progress * Math.PI * 2;
 		const offsetX = Math.sin(angle) * amplitude;
-	
+
 		return { offsetX };
 	};
-	
-	
+
+
 	const renderUnit = ({ item, section }: { item: any; section: any }) => {
 		// Calculate the base index for the current unit by summing the skill counts of previous units in the section
 		const baseIndex = section.data
 			.slice(0, item.unitIndex - 1) // Take all units before this one
 			.reduce((sum: number, unit: any) => sum + unit.skills.length, 0); // Sum their skill counts
-	
 		const totalSkills = section.data
 			.flatMap((unit: any) => unit.skills)
 			.length;
@@ -137,7 +134,7 @@ const SwimProgress : React.FC<{ skillGroup: string | undefined, lastSkill: strin
 			</View>
 		);
 	};
-	
+
 	const renderSectionHeader = ({
 		section,
 	}: {
@@ -145,10 +142,7 @@ const SwimProgress : React.FC<{ skillGroup: string | undefined, lastSkill: strin
 	}) => (
 		<View style={styles.stickyHeader}>
 			<View
-				style={[
-					styles.headerContainer,
-					{ backgroundColor: shadesOfBlue[section.index - 1] },
-				]}
+				style={[styles.headerContainer, { backgroundColor: shadesOfBlue[section.index - 1] }]}
 			>
 				<Text style={styles.sectionTitle}>
 					Section {section.index}: {section.title}
@@ -171,8 +165,6 @@ const SwimProgress : React.FC<{ skillGroup: string | undefined, lastSkill: strin
 			</View>
 		</View>
 	);
-	
-	
 
 	return (
 		<View style={styles.container}>
@@ -186,9 +178,7 @@ const SwimProgress : React.FC<{ skillGroup: string | undefined, lastSkill: strin
 				onViewableItemsChanged={viewableItemsChangedRef.current}
 				viewabilityConfig={viewabilityConfig}
 				showsVerticalScrollIndicator={false}
-				//scroll to last skill
 			/>
-
 		</View>
 	);
 };
