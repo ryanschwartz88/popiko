@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, StyleSheet, Animated, TouchableOpacity } from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity, SafeAreaView } from 'react-native';
 import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome';
 import { faTimesCircle, faTimes } from '@fortawesome/free-solid-svg-icons';
 
@@ -9,17 +9,13 @@ interface CustomAlertProps {
   duration?: number;
 }
 
-const CustomAlert: React.FC<CustomAlertProps> = ({ message, onClose, duration = 3000 }) => {
-  const [visible, setVisible] = useState(true);
-  const slideAnim = new Animated.Value(-200);
+const CustomAlert: React.FC<CustomAlertProps> = ({ message, onClose, duration = 2000 }) => {
+
+  const handleClose = () => {
+    onClose();
+  };
 
   useEffect(() => {
-    Animated.timing(slideAnim, {
-      toValue: 0,
-      duration: 500,
-      useNativeDriver: true,
-    }).start();
-
     const timer = setTimeout(() => {
       handleClose();
     }, duration);
@@ -27,23 +23,8 @@ const CustomAlert: React.FC<CustomAlertProps> = ({ message, onClose, duration = 
     return () => clearTimeout(timer);
   }, []);
 
-  const handleClose = () => {
-    Animated.timing(slideAnim, {
-      toValue: -200,
-      duration: 500,
-      useNativeDriver: true,
-    }).start(() => {
-      setVisible(false);
-      onClose();
-    });
-  };
-
-  if (!visible) {
-    return null;
-  }
-
   return (
-    <Animated.View style={[styles.alertContainer, { transform: [{ translateY: slideAnim }] }]}>
+    <SafeAreaView style={styles.alertContainer}>
       <View style={styles.contentContainer}>
         <View style={styles.iconContainer}>
           <FontAwesomeIcon icon={faTimesCircle} size={24} color="red" />
@@ -56,7 +37,7 @@ const CustomAlert: React.FC<CustomAlertProps> = ({ message, onClose, duration = 
           <FontAwesomeIcon icon={faTimes} size={20} color="black" />
         </TouchableOpacity>
       </View>
-    </Animated.View>
+    </SafeAreaView>
   );
 };
 
@@ -65,26 +46,26 @@ const styles = StyleSheet.create({
     position: 'absolute',
     top: 0,
     left: 0,
-    right: 0,
+    right: 0, // Ensure it spans the width of the screen
     backgroundColor: '#FDEDEF',
-    paddingHorizontal: 10,
-    paddingVertical: 20,
     borderBottomWidth: 1,
     borderBottomColor: '#ddd',
-    height: 120,
     zIndex: 1000,
+    flexDirection: 'row', // Ensures child elements are arranged horizontally
+    alignItems: 'center', // Vertically center the contents
   },
   contentContainer: {
-    flex: 1,
-    flexDirection: 'row',
-    alignItems: 'flex-end',
+    flexDirection: 'row', // Ensures icon and text are horizontally aligned
+    alignItems: 'center', // Centers items vertically
+    flex: 1, // Make the container flexible
+    paddingHorizontal: 10,
+    paddingVertical: 20,
   },
   iconContainer: {
     marginRight: 10,
-    paddingBottom: 5,
   },
   textContainer: {
-    flex: 1,
+    flex: 1, // Ensures the text takes up remaining space
   },
   title: {
     fontWeight: 'bold',

@@ -4,6 +4,9 @@ import { GoogleSignin, statusCodes } from '@react-native-google-signin/google-si
 import { supabase } from '@/supabase/client';
 import { useRouter } from 'expo-router';
 import GoogleLogo from '@/assets/images/google-icon.svg'
+import * as Notifications from 'expo-notifications'
+import { setExpoPushToken } from '@/hooks/account/useExpoPush'
+import registerForPushNotificationsAsync from '@/hooks/account/useExpoPush'
 
 /* 
 
@@ -18,6 +21,19 @@ TODO:
 
 export default function GoogleAuth() {
   const router = useRouter();
+
+  const handleRegistration = async (session: string | null) => {
+    try {
+      const existingStatus = await Notifications.getPermissionsAsync();
+      if (existingStatus.granted || existingStatus.ios?.status === Notifications.IosAuthorizationStatus.PROVISIONAL) {
+        return;
+      }
+      const token = await registerForPushNotificationsAsync();
+      setExpoPushToken(token ?? null, session);
+    } catch (error: any) {
+      console.error(error);
+    }
+  };
 
   const handleSignInError = (error: any) => {
     if (error.code === statusCodes.SIGN_IN_CANCELLED) {
@@ -47,6 +63,7 @@ export default function GoogleAuth() {
           access_token: tokens.accessToken,
         });
         if (error) throw error;
+        handleRegistration(data.session?.user?.id);
         router.replace('/(tabs)/');
       } else {
         throw new Error('No ID token present!');

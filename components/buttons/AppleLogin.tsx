@@ -5,6 +5,10 @@ import { supabase } from '@/supabase/client'
 import { useRouter } from 'expo-router'
 import CustomAlert from '@/components/modals/ErrorAlert'
 import Icon from 'react-native-vector-icons/FontAwesome'
+import { setExpoPushToken } from '@/hooks/account/useExpoPush'
+import registerForPushNotificationsAsync from '@/hooks/account/useExpoPush'
+import * as Notifications from 'expo-notifications'
+import Constants from 'expo-constants'
 
 /* 
 TODO: Handle apple sign in error
@@ -16,6 +20,19 @@ It uses the AppleAuthentication library to sign in users with the Apple Sign-In 
 export default function AppleAuth() {
   const [alertVisible, setAlertVisible] = useState(false);
   const router = useRouter();
+
+  const handleRegistration = async (session: string | null) => {
+    try {
+      const existingStatus = await Notifications.getPermissionsAsync();
+      if (existingStatus.granted || existingStatus.ios?.status === Notifications.IosAuthorizationStatus.PROVISIONAL) {
+        return;
+      }
+      const token = await registerForPushNotificationsAsync();
+      setExpoPushToken(token ?? null, session);
+    } catch (error: any) {
+      console.error(error);
+    }
+  };
 
   const handleAppleSignIn = async () => {
     if (Platform.OS === 'ios') {
@@ -32,6 +49,7 @@ export default function AppleAuth() {
             token: credential.identityToken,
           });
           if (!error) {
+            handleRegistration(data.session?.user?.id);
             router.replace('/');
           }
         } else {

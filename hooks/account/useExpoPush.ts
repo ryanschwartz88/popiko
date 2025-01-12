@@ -5,8 +5,6 @@ import Constants from 'expo-constants';
 import { supabase } from '@/supabase/client';
 import { useSession } from '@/hooks/account/useSession';
 
-const { session } = useSession();
-
 
 Notifications.setNotificationHandler({
     handleNotification: async () => ({
@@ -34,7 +32,13 @@ export default async function registerForPushNotificationsAsync() {
         const { status: existingStatus } = await Notifications.getPermissionsAsync();
         let finalStatus = existingStatus;
         if (existingStatus !== 'granted') {
-            const { status } = await Notifications.requestPermissionsAsync();
+            const { status } = await Notifications.requestPermissionsAsync({
+                ios: {
+                    allowAlert: true,
+                    allowBadge: true,
+                    allowSound: true,
+                },
+            });
             finalStatus = status;
         }
         if (finalStatus !== 'granted') {
@@ -60,12 +64,11 @@ export default async function registerForPushNotificationsAsync() {
     }
 }
 
-export async function setExpoPushToken(token: string | null) {
+export async function setExpoPushToken(token: string | null, session: string | null) {
     const { data, error } = await supabase
         .from('profiles')
         .update({ expo_push_token: token })
-        .eq('id', session?.user.id)
-        .select('id, expo_push_token')
+        .eq('id', session)
         .single();
 
     if (error) {

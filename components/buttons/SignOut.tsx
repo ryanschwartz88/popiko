@@ -2,11 +2,11 @@ import { LargeSecureStore, supabase } from "@/supabase/client";
 import { router } from "expo-router";
 import React from "react";
 import { View, Text, StyleSheet, TouchableOpacity } from "react-native";
-import {useSession} from "@/hooks/account/useSession";
 
 export default function SignOut() {
     const handleSignOut = async () => {
         await supabase.auth.signOut();
+        router.replace('/');
     }
     return (
         <TouchableOpacity onPress={handleSignOut} style={styles.button}>

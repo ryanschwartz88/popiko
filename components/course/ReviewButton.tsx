@@ -170,7 +170,7 @@ const ReviewModal: React.FC<ReviewModalProps> = ({ lastSkill, skillGroup }) => {
       <Modal visible={isSectionSelectionVisible} animationType="fade" transparent={true}>
         <View style={styles.modalOverlay}>
             <View style={styles.modalContent}>
-            <Text style={styles.modalTitle}>Select Sections to Review</Text>
+            <Text style={styles.modalTitle}>Select Categories to Review</Text>
             <ScrollView>
                 {availableSections.map((section) => (
                 <TouchableOpacity
