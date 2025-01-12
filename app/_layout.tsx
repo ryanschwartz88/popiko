@@ -6,7 +6,6 @@ import * as SplashScreen from 'expo-splash-screen';
 import { useEffect } from 'react';
 import 'react-native-reanimated';
 import { Inter_400Regular, Inter_700Bold } from '@expo-google-fonts/inter';
-import { AccountProvider } from '@/hooks/account/useAccount';
 
 
 
@@ -14,29 +13,29 @@ import { AccountProvider } from '@/hooks/account/useAccount';
 SplashScreen.preventAutoHideAsync();
 
 export default function RootLayout() {
-  const [loaded] = useFonts({
-    Inter_400Regular,
-    Inter_700Bold,
-  });
+    const [loaded] = useFonts({
+        Inter_400Regular,
+        Inter_700Bold,
+    });
 
-  useEffect(() => {
-    if (loaded) {
-      SplashScreen.hideAsync();
+    useEffect(() => {
+        if (loaded) {
+            SplashScreen.hideAsync();
+        }
+    }, [loaded]);
+
+    if (!loaded) {
+        return null;
     }
-  }, [loaded]);
 
-  if (!loaded) {
-    return null;
-  }
-
-  return (
-    <ThemeProvider value={DefaultTheme}>
-      <SessionProvider>
-          <Stack screenOptions={{ headerShown: false }}>
-            <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
-            <Stack.Screen name="+not-found" />
-          </Stack>
-      </SessionProvider>
-    </ThemeProvider>
-  );
+    return (
+        <ThemeProvider value={DefaultTheme}>
+        <SessionProvider>
+            <Stack screenOptions={{ headerShown: false }}>
+                <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
+                <Stack.Screen name="+not-found" />
+            </Stack>
+        </SessionProvider>
+        </ThemeProvider>
+    );
 }

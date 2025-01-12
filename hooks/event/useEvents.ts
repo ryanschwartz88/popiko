@@ -64,9 +64,7 @@ export const useEvents = (startDate: Date, endDate?: Date, instructorAccount: bo
         const fetchAllEvents = async () => {
             if (!session) return;
 
-            const [bookings] = await Promise.all([
-                fetchBookings(),
-            ]);
+            const bookings = await fetchBookings();
 
             const summerMonths = [5, 6, 7]; // June - August
             const isSummer = summerMonths.includes(startDate.getMonth());
@@ -88,7 +86,7 @@ export const useEvents = (startDate: Date, endDate?: Date, instructorAccount: bo
         };
 
         fetchAllEvents();
-    }, [session, startDate, endDate, instructorAccount]);
+    }, [session, instructorAccount]);
 
     return events;
 };
