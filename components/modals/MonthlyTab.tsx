@@ -18,6 +18,7 @@ const MonthlyTab: React.FC = () => {
 	const [modalVisible, setModalVisible] = useState(false);
 	const currentDate = new Date();
 	const [activeSectionsByYear, setActiveSectionsByYear] = useState<Record<string, number[]>>({});
+	const [activeYear, setActiveYear] = useState<string | null>(new Date().getFullYear().toString());
 	const { accountData, session } = useSession();
 
 	const startDate = new Date(accountData?.created_at || new Date());
@@ -167,6 +168,14 @@ const MonthlyTab: React.FC = () => {
 			[year]: newSections.slice(-1), // Keep only one section open for the active year
 		});
 	};
+
+	const handleYearToggle = (year: string) => {
+		if (activeYear === year) {
+			setActiveYear(null);
+		} else {
+			setActiveYear(year);
+		}
+	};
 	
 	
 
@@ -205,27 +214,34 @@ const MonthlyTab: React.FC = () => {
 					<Text style={styles.emphasizedEmail}>payments@popikotutoring.com</Text>.
 				</Text>
 			</View>
-
-
 			{groupedMonths.map(({ title: year, data: months }) => (
 				<SafeAreaView style={styles.year} key={year}>
 					{/* Year Header */}
-					{renderYearHeader(year)}
+					<TouchableOpacity
+						onPress={() => handleYearToggle(year)}
+					>
+						{renderYearHeader(year)}
+					</TouchableOpacity>
 
-					{/* Monthly Accordion */}
-					<Accordion
-						sections={months}
-						activeSections={activeSectionsByYear[year] || []}
-						renderHeader={(month, index, isActive) => renderHeader(month, index, isActive)}
-						renderContent={(month) => renderContent(month)}
-						onChange={(newSections) => handleAccordionChange(year, newSections)}
-						expandMultiple={false} // Allow only one section at a time
-						renderAsFlatList
-						underlayColor="#fff"
-					/>
+					{/* Expand Months for Active Year */}
+					{activeYear === year && (
+						<Accordion
+							sections={months}
+							activeSections={activeSectionsByYear[year] || []}
+							renderHeader={(month, index, isActive) =>
+							renderHeader(month, index, isActive)
+							}
+							renderContent={(month) => renderContent(month)}
+							onChange={(newSections) =>
+							handleAccordionChange(year, newSections)
+							}
+							expandMultiple={false}
+							renderAsFlatList
+							underlayColor="#fff"
+						/>
+					)}
 				</SafeAreaView>
 			))}
-
 			</View>
 		</SafeAreaView>
 		</Modal>
