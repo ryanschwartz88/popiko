@@ -19,6 +19,7 @@ const WaterSkill = ({
   const [modalVisible, setModalVisible] = useState(false);
 
   const handlePress = () => {
+    if (locked) return;
     setModalVisible(true);
   };
 
@@ -43,7 +44,7 @@ const WaterSkill = ({
       </Pressable>
 
       <Modal
-        animationType="slide"
+        animationType="fade"
         transparent={true}
         visible={modalVisible}
         onRequestClose={() => setModalVisible(!modalVisible)}

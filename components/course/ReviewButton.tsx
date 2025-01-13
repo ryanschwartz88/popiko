@@ -8,7 +8,7 @@ import {
   ScrollView,
 } from "react-native";
 import { sections } from "@/constants/childrenSkills";
-import { Feather, Ionicons } from "@expo/vector-icons";
+import { Feather, Ionicons, MaterialIcons } from "@expo/vector-icons";
 
 interface ReviewModalProps {
   lastSkill: string | undefined;
@@ -170,6 +170,12 @@ const ReviewModal: React.FC<ReviewModalProps> = ({ lastSkill, skillGroup }) => {
       <Modal visible={isSectionSelectionVisible} animationType="fade" transparent={true}>
         <View style={styles.modalOverlay}>
             <View style={styles.modalContent}>
+            <TouchableOpacity
+              style={styles.closeButton}
+              onPress={() => setSectionSelectionVisible(false)}
+            >
+              <MaterialIcons name="close" size={24} color="black" />
+            </TouchableOpacity>
             <Text style={styles.modalTitle}>Select Categories to Review</Text>
             <ScrollView>
                 {availableSections.map((section) => (

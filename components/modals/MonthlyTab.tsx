@@ -180,10 +180,10 @@ const MonthlyTab: React.FC = () => {
 		</TouchableOpacity>
 
 		<Modal
-		animationType="slide"
-		transparent={true}
-		visible={modalVisible}
-		onRequestClose={() => setModalVisible(false)}
+			animationType="slide"
+			transparent={true}
+			visible={modalVisible}
+			onRequestClose={() => setModalVisible(false)}
 		>
 		<SafeAreaView style={styles.centeredView}>
 			<View style={styles.modalView}>
