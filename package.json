@@ -30,9 +30,11 @@
     "expo-apple-authentication": "~6.4.2",
     "expo-constants": "~16.0.2",
     "expo-dev-client": "^4.0.29",
+    "expo-device": "~6.0.2",
     "expo-font": "~12.0.10",
     "expo-insights": "~0.7.0",
     "expo-linking": "~6.3.1",
+    "expo-notifications": "~0.28.19",
     "expo-router": "~3.5.24",
     "expo-secure-store": "~13.0.2",
     "expo-splash-screen": "~0.27.7",
@@ -48,6 +50,7 @@
     "react-native-calendars": "^1.1307.0",
     "react-native-collapsible": "^1.6.2",
     "react-native-dropdown-select-list": "^2.0.5",
+    "react-native-fast-image": "^8.6.3",
     "react-native-get-random-values": "^1.11.0",
     "react-native-reanimated": "~3.10.1",
     "react-native-responsive-dimensions": "^3.1.1",
@@ -57,9 +60,7 @@
     "react-native-svg": "15.2.0",
     "react-native-swipeable": "^0.6.0",
     "react-native-web": "~0.19.10",
-    "uuid": "^11.0.3",
-    "expo-notifications": "~0.28.19",
-    "expo-device": "~6.0.2"
+    "uuid": "^11.0.3"
   },
   "devDependencies": {
     "@babel/core": "^7.20.0",

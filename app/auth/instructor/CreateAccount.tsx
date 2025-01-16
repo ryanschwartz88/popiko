@@ -1,44 +1,35 @@
 import React, { useState } from 'react';
-import { Text, StyleSheet, Pressable, Keyboard, View, TouchableOpacity, Platform } from 'react-native';
+import { Text, StyleSheet, Pressable, Keyboard, View, TouchableOpacity } from 'react-native';
+import BackButton from '@/components/buttons/BackButton';
 import AppleAuth from '@/components/buttons/AppleLogin';
 import GoogleAuth from '@/components/buttons/GoogleLogin';
-import { useRouter } from 'expo-router';
-import { supabase } from '@/supabase/client';
-import CustomAlert from '@/components/modals/ErrorAlert';
+import { supabase } from '@/hooks/account/client';
 import { Input } from '@rneui/themed';
+import  CustomAlert from '@/components/modals/ErrorAlert';
 import NextButton from '@/assets/buttons/next-button.svg';
-import registerForPushNotificationsAsync, { setExpoPushToken } from '@/hooks/account/useExpoPush';
-import * as Notifications from 'expo-notifications';
+import { handleRegistration } from '@/hooks/account/handleRegistration';
+import { useSession } from '@/hooks/account/useSession';
+import { userData, accountData } from '@/types/session';
 
-export default function Login() {
+export default function CreateAccount() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
-  const router = useRouter();
   const [alertVisible, setAlertVisible] = useState(false);
+  const [adminPassword, setAdminPassword] = useState('');
+  const [instructorRole, setInstructorRole] = useState('instructor');
+  const { setRole } = useSession();
+  
 
-  const handleRegistration = async (session: string | null) => {
-    try {
-      const existingStatus = await Notifications.getPermissionsAsync();
-      if (existingStatus.granted || existingStatus.ios?.status === Notifications.IosAuthorizationStatus.PROVISIONAL) {
-        return;
-      }
-      const token = await registerForPushNotificationsAsync();
-      setExpoPushToken(token ?? null, session);
-    } catch (error: any) {
-      console.error(error);
-    }
-  };
-
-  const signinWithEmail = async () => {
+  const signUpWithEmail = async () => {
     setLoading(true);
+    setRole(instructorRole);
     try {
       if (!email || !password) throw new Error('Email and password are required');
-      const {data, error} = await supabase.auth.signInWithPassword({email, password});
+      const {data, error} = await supabase.auth.signUp({email, password});
       if (error) throw error;
       if (!data.session) throw new Error('User not found');
-      handleRegistration(data.session?.user?.id);
-      router.replace('/'); 
+      handleRegistration(data.session, 'instructor');
     } catch (error) {
       setAlertVisible(true);
     } finally {
@@ -48,11 +39,8 @@ export default function Login() {
   
   return (
     <Pressable style={styles.container} onPress={() => {Keyboard.dismiss()}}>
-      {alertVisible && <CustomAlert
-        message="Invalid email or password"
-        onClose={() => setAlertVisible(false)}
-      /> }
-      <Text style={styles.title}>Log In</Text>
+      <BackButton />
+      <Text style={styles.title}>Create an Account</Text>
       <View style={[styles.verticallySpaced, styles.mt20]}>
         <Input
           label="Email"
@@ -73,11 +61,15 @@ export default function Login() {
         />
       </View>
       <Text style={styles.title}>Or</Text>
-      <GoogleAuth />
-      <AppleAuth />
-      <TouchableOpacity style={styles.mt20} onPress={signinWithEmail}>
+      <GoogleAuth role={instructorRole} setSessionRole={setRole}/>
+      <AppleAuth role={instructorRole} setSessionRole={setRole}/>
+      <TouchableOpacity style={styles.mt20} onPress={signUpWithEmail}>
         <NextButton width={59} height={59} style={{alignSelf: 'center', marginTop: 20}}/>
       </TouchableOpacity>
+      {alertVisible && <CustomAlert
+        message="An Error Occurred. Please try again."
+        onClose={() => setAlertVisible(false)}
+      /> }
     </Pressable>
 
   );

@@ -1,5 +1,5 @@
 import { useSession } from "@/hooks/account/useSession";
-import { supabase } from "@/supabase/client";
+import { supabase } from "@/hooks/account/client";
 import { useEffect, useState } from "react";
 import { CalendarEvent } from "@/types/event";
 import { weekdaySchedule, weekendSchedule } from "@/constants/schedule";
@@ -43,7 +43,7 @@ export const useEvents = (startDate: Date, endDate?: Date, instructorAccount: bo
                         start: startDateTime,
                         end: endDateTime,
                         cost: booking.cost,
-                        status: isCurrentUser ? 'booked' : 'unavailable',
+                        status: booking.status,
                         childID: booking.child_id,
                         skill_group: booking.skill_group,
                         private: booking.private,

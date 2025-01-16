@@ -2,11 +2,13 @@ import { Session } from '@supabase/supabase-js';
 
 export interface SessionContextType {
     session: Session | null;
-    role: string | null;
     isLoading: boolean;
 }
 
 export type AccountContextType = {
+    role: string | null;
+    setRole: (role: string) => void;
+    setAccountData: (data: userData) => void;
     currentAccountUuid: string | null;
     setCurrentAccountUuid: (uuid: string) => void;
     accountData: userData | null;
@@ -21,6 +23,6 @@ export type userData = {
 export type accountData = {
     id: string;
     name: string;
-    skill_group: string;
-    last_obtained_skill: string;
+    skill_group?: string;
+    last_obtained_skill?: string;
 };  

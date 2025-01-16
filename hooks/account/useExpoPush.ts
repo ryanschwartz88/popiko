@@ -2,7 +2,7 @@ import * as Device from 'expo-device';
 import * as Notifications from 'expo-notifications';
 import { Platform } from 'react-native';
 import Constants from 'expo-constants';
-import { supabase } from '@/supabase/client';
+import { supabase } from '@/hooks/account/client';
 import { useSession } from '@/hooks/account/useSession';
 
 
@@ -61,19 +61,5 @@ export default async function registerForPushNotificationsAsync() {
         }
     } else {
         handleRegistrationError('Must use physical device for push notifications');
-    }
-}
-
-export async function setExpoPushToken(token: string | null, session: string | null) {
-    const { data, error } = await supabase
-        .from('profiles')
-        .update({ expo_push_token: token })
-        .eq('id', session)
-        .single();
-
-    if (error) {
-        console.error('Error updating push token:', error.message);
-    } else {
-        console.log('Push token updated:', data);
     }
 }

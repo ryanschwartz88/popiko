@@ -1,12 +1,10 @@
 import React from 'react';
 import { View, Text, TouchableOpacity, StyleSheet, Alert, Platform } from 'react-native';
 import { GoogleSignin, statusCodes } from '@react-native-google-signin/google-signin';
-import { supabase } from '@/supabase/client';
+import { supabase } from '@/hooks/account/client';
 import { useRouter } from 'expo-router';
 import GoogleLogo from '@/assets/images/google-icon.svg'
-import * as Notifications from 'expo-notifications'
-import { setExpoPushToken } from '@/hooks/account/useExpoPush'
-import registerForPushNotificationsAsync from '@/hooks/account/useExpoPush'
+import { handleRegistration } from '@/hooks/account/handleRegistration'
 
 /* 
 
@@ -19,21 +17,13 @@ TODO:
 
 */
 
-export default function GoogleAuth() {
-  const router = useRouter();
+type AuthProps = {
+  role?: string
+  setSessionRole?: (role: string) => void
+}
 
-  const handleRegistration = async (session: string | null) => {
-    try {
-      const existingStatus = await Notifications.getPermissionsAsync();
-      if (existingStatus.granted || existingStatus.ios?.status === Notifications.IosAuthorizationStatus.PROVISIONAL) {
-        return;
-      }
-      const token = await registerForPushNotificationsAsync();
-      setExpoPushToken(token ?? null, session);
-    } catch (error: any) {
-      console.error(error);
-    }
-  };
+export default function GoogleAuth({role, setSessionRole}: AuthProps) {
+  const router = useRouter();
 
   const handleSignInError = (error: any) => {
     if (error.code === statusCodes.SIGN_IN_CANCELLED) {
@@ -63,8 +53,13 @@ export default function GoogleAuth() {
           access_token: tokens.accessToken,
         });
         if (error) throw error;
-        handleRegistration(data.session?.user?.id);
-        router.replace('/(tabs)/');
+        if (!data.session) throw new Error('User not found');
+        if (role && setSessionRole) {
+           setSessionRole(role);
+           handleRegistration(data.session, role);
+        } else {
+          router.replace('/');
+        }
       } else {
         throw new Error('No ID token present!');
       }

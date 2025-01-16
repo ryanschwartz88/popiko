@@ -1,5 +1,5 @@
 import { useSession } from "@/hooks/account/useSession";
-import { supabase } from "@/supabase/client";
+import { supabase } from "@/hooks/account/client";
 import { useEffect, useState } from "react";
 import { CalendarEvent } from "@/types/event";
 import { isWithinInterval, addMinutes } from 'date-fns';

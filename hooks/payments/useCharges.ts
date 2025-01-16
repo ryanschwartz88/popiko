@@ -1,5 +1,5 @@
 import { useSession } from "@/hooks/account/useSession";
-import { supabase } from "@/supabase/client";
+import { supabase } from "@/hooks/account/client";
 import { useEffect, useState } from "react";
 import { Charge } from "@/types/charge";
 
@@ -40,8 +40,8 @@ export const useCharges = (userID: string, startDate: Date, endDate?: Date) => {
                         discount: charge.discount
                     };
                 });
-    
                 return formattedCharges;
+
             }
 
         }

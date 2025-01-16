@@ -1,31 +1,31 @@
 import React, { useState } from 'react';
-import { Text, StyleSheet, Pressable, Keyboard, View, TouchableOpacity } from 'react-native';
-import BackButton from '@/components/buttons/BackButton';
+import { Text, StyleSheet, Pressable, Keyboard, View, TouchableOpacity, Platform } from 'react-native';
 import AppleAuth from '@/components/buttons/AppleLogin';
 import GoogleAuth from '@/components/buttons/GoogleLogin';
 import { useRouter } from 'expo-router';
 import { supabase } from '@/hooks/account/client';
+import CustomAlert from '@/components/modals/ErrorAlert';
 import { Input } from '@rneui/themed';
-import  CustomAlert from '@/components/modals/ErrorAlert';
 import NextButton from '@/assets/buttons/next-button.svg';
-import { handleRegistration } from '@/hooks/account/handleRegistration';
+import registerForPushNotificationsAsync from '@/hooks/account/useExpoPush';
+import * as Notifications from 'expo-notifications';
+import BackButton from '@/components/buttons/BackButton';
 
-
-export default function CreateAccount() {
+export default function Login() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
   const router = useRouter();
   const [alertVisible, setAlertVisible] = useState(false);
 
-  const signUpWithEmail = async () => {
+
+  const signinWithEmail = async () => {
     setLoading(true);
     try {
       if (!email || !password) throw new Error('Email and password are required');
-      const {data, error} = await supabase.auth.signUp({email, password});
+      const {data, error} = await supabase.auth.signInWithPassword({email, password});
       if (error) throw error;
       if (!data.session) throw new Error('User not found');
-      handleRegistration(data.session, 'parent');
       router.replace('/'); 
     } catch (error) {
       setAlertVisible(true);
@@ -36,7 +36,12 @@ export default function CreateAccount() {
   
   return (
     <Pressable style={styles.container} onPress={() => {Keyboard.dismiss()}}>
-      <Text style={styles.title}>Create an Account</Text>
+      <BackButton />
+      {alertVisible && <CustomAlert
+        message="Invalid email or password"
+        onClose={() => setAlertVisible(false)}
+      /> }
+      <Text style={styles.title}>Log In</Text>
       <View style={[styles.verticallySpaced, styles.mt20]}>
         <Input
           label="Email"
@@ -57,15 +62,11 @@ export default function CreateAccount() {
         />
       </View>
       <Text style={styles.title}>Or</Text>
-      <GoogleAuth role="parent"/>
-      <AppleAuth role="parent"/>
-      <TouchableOpacity style={styles.mt20} onPress={signUpWithEmail}>
+      <GoogleAuth />
+      <AppleAuth />
+      <TouchableOpacity style={styles.mt20} onPress={signinWithEmail}>
         <NextButton width={59} height={59} style={{alignSelf: 'center', marginTop: 20}}/>
       </TouchableOpacity>
-      {alertVisible && <CustomAlert
-        message="An Error Occurred. Please try again."
-        onClose={() => setAlertVisible(false)}
-      /> }
     </Pressable>
 
   );

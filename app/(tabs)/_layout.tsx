@@ -1,79 +1,98 @@
 import { Redirect, Tabs } from 'expo-router';
-import React, { useEffect } from 'react';
-import { Text } from 'react-native';
-import { useSession } from '@/hooks/account/useSession';
+import React, { useEffect, useState } from 'react';
 import * as SplashScreen from 'expo-splash-screen';
 import { FontAwesome5, MaterialCommunityIcons } from '@expo/vector-icons';
-import { Inter_400Regular, Inter_700Bold, useFonts } from '@expo-google-fonts/inter';
-
-// Prevent the splash screen from auto-hiding before asset loading is complete.
-SplashScreen.preventAutoHideAsync();
+import { useSession } from '@/hooks/account/useSession';
+import { ActivityIndicator, View } from 'react-native';
 
 export default function TabLayout() {
-  	const { session, isLoading, role } = useSession();
-
-  	// TODO : Change loading to splash screen
-  	const [loaded] = useFonts({
-		Inter_400Regular,
-		Inter_700Bold,
-	});
+	const { session, isLoading, role } = useSession();
+	const [appIsReady, setAppIsReady] = useState(false);
 
 	useEffect(() => {
-		if (loaded && !isLoading) {
+		async function prepare() {
+			// Keep the splash screen visible while loading
+			await SplashScreen.preventAutoHideAsync();
+
+			// Simulate any necessary loading (e.g., fetching assets or data)
+			if (!isLoading) {
+				setAppIsReady(true);
+			}
+		}
+
+		prepare();
+	}, [isLoading]);
+
+	useEffect(() => {
+		// Hide the splash screen once the app is ready
+		if (appIsReady) {
 			SplashScreen.hideAsync();
 		}
-	}, [loaded, isLoading]);
+	}, [appIsReady]);
 
-	if (!loaded) {
-		return null;
+	if (!appIsReady) {
+		// Keep splash screen visible while loading
+		return (
+			<View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+				<ActivityIndicator />
+			</View>
+		);
 	}
 
 	// Redirect to the sign-in page if the user is not authenticated
-	if (!session || !role) {
-		return <Redirect href="/auth/client/Login" />;
+	if (!session) {
+		return <Redirect href="/onboarding/Welcome" />;
 	}
 
 	if (role === 'instructor') {
 		return <Redirect href="/instructor" />;
 	} else if (role === 'admin') {
 		return <Redirect href="/admin" />;
+	} else if (role === 'parent') {
+		return (
+			<Tabs
+				screenOptions={{
+					tabBarStyle: { backgroundColor: '#758EBF' },
+					headerShown: false,
+					tabBarShowLabel: false,
+				}}
+			>
+				{/* Index Tab */}
+				<Tabs.Screen
+					name="index"
+					options={{
+						tabBarIcon: ({ focused, size }) => (
+							<FontAwesome5
+								name={focused ? 'calendar-check' : 'calendar'}
+								size={size}
+								color="#fff"
+							/>
+						),
+					}}
+				/>
+
+				{/* Course Tab */}
+				<Tabs.Screen
+					name="course"
+					options={{
+						tabBarIcon: ({ focused, size }) => (
+							<MaterialCommunityIcons
+								name={focused ? 'map-marker' : 'map-marker-outline'}
+								size={size}
+								color="#fff"
+							/>
+						),
+					}}
+				/>
+			</Tabs>
+		);
+	} else {
+		return (
+			<View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+				<ActivityIndicator />
+			</View>
+		);
 	}
 
-	return (
-		<Tabs
-		screenOptions={{
-			tabBarStyle: { backgroundColor: '#758EBF' },
-			headerShown: false,
-			tabBarShowLabel: false,
-		}}
-		>
-		{/* Index Tab */}
-		<Tabs.Screen
-			name="index"
-			options={{
-			tabBarIcon: ({ focused, size }) => (
-				<FontAwesome5
-				name={focused ? 'calendar-check' : 'calendar'}
-				size={size}
-				color={'#fff'}
-				/>
-			),
-			}}
-		/>
-
-		{/* Course Tab */}
-		<Tabs.Screen
-			name="course"
-			options={{
-			tabBarIcon: ({ focused, size }) => (
-				<MaterialCommunityIcons
-				name={focused ? 'map-marker' : 'map-marker-outline'}
-				size={size}
-				color="#fff"
-				/>
-			),
-			}}
-		/>
-		</Tabs>
-	);
+	
 }

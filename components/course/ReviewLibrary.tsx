@@ -5,7 +5,7 @@ const ReviewLibrary = () => {
     return (
         <View style={styles.wrapper}>
             <ImageBackground
-                source={require('@/assets/images/swimming-girl-underwater.jpg')} // Replace with your water-like pattern image path
+                source={require('@/assets/images/swimming-girl-underwater.jpg')}
                 style={styles.container}
                 resizeMode="cover"
                 imageStyle={styles.image}
