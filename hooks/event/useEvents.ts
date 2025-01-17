@@ -8,19 +8,22 @@ export const useEvents = (startDate: Date, endDate?: Date, instructorAccount: bo
     const { session } = useSession();
     const [events, setEvents] = useState<CalendarEvent[]>([]);
 
-
     const fetchBookings = async () => {
         if (session) {
             let query = supabase
                 .from('bookings')
                 .select(`
                     *,
-                    children(name)
-                `)
-                .gte('date', startDate.toISOString().split('T')[0]);
-
-            if (endDate) {
+                    children(name),
+                    instructor:instructors(name)
+                `);
+            if (endDate?.getDate() === startDate.getDate()) {
+                query = query.eq('date', startDate.toISOString().split('T')[0]);
+            } else if (endDate) {
+                query = query.gte('date', startDate.toISOString().split('T')[0]);
                 query = query.lte('date', endDate.toISOString().split('T')[0]);
+            } else {
+                query = query.gte('date', startDate.toISOString().split('T')[0]);
             }
 
             const { data, error } = await query;
@@ -32,7 +35,6 @@ export const useEvents = (startDate: Date, endDate?: Date, instructorAccount: bo
     
             if (data) {
                 const formattedBookings: CalendarEvent[] = data.map((booking: any) => {
-                    const isCurrentUser = instructorAccount ? booking.instructor_id === session?.user.id : booking.user_id === session?.user.id;
                     const startDateTime = new Date(`${booking.date}T${booking.start_time}`);
                     const endDateTime = new Date(`${booking.date}T${booking.end_time}`);
 
@@ -48,7 +50,8 @@ export const useEvents = (startDate: Date, endDate?: Date, instructorAccount: bo
                         skill_group: booking.skill_group,
                         private: booking.private,
                         instructorID: booking.instructor_id,
-                        childName: booking.children.name
+                        childName: booking.children.name,
+                        instructorName: booking.instructor.name
                     };
                 });
     

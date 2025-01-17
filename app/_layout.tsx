@@ -13,6 +13,7 @@ import { Inter_400Regular, Inter_700Bold } from '@expo-google-fonts/inter';
 SplashScreen.preventAutoHideAsync();
 
 export default function RootLayout() {
+
     const [loaded] = useFonts({
         Inter_400Regular,
         Inter_700Bold,

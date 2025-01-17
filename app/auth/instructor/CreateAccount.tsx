@@ -9,7 +9,6 @@ import  CustomAlert from '@/components/modals/ErrorAlert';
 import NextButton from '@/assets/buttons/next-button.svg';
 import { handleRegistration } from '@/hooks/account/handleRegistration';
 import { useSession } from '@/hooks/account/useSession';
-import { userData, accountData } from '@/types/session';
 
 export default function CreateAccount() {
   const [email, setEmail] = useState('');
@@ -17,7 +16,7 @@ export default function CreateAccount() {
   const [loading, setLoading] = useState(false);
   const [alertVisible, setAlertVisible] = useState(false);
   const [adminPassword, setAdminPassword] = useState('');
-  const [instructorRole, setInstructorRole] = useState('instructor');
+  const [instructorRole, setInstructorRole] = useState('admin');
   const { setRole } = useSession();
   
 

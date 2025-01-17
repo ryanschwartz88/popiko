@@ -4,10 +4,11 @@ export interface CalendarEvent {
   title: string;
   start: Date;
   end: Date;
-  status: 'available' | 'booked' | 'unavailable' | 'cancelled' | 'completed' | 'noshow';
+  status: string;
   cost?: number;
-  skill_group?: 'waterSafety' | 'freestyle' | 'backstroke' | 'breaststroke' | 'butterfly';
+  skill_group?: string;
   childID?: string;
   instructorID?: string;
   childName?: string;
+  instructorName?: string;
 }

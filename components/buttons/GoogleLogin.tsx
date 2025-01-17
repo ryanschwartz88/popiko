@@ -56,7 +56,7 @@ export default function GoogleAuth({role, setSessionRole}: AuthProps) {
         if (!data.session) throw new Error('User not found');
         if (role && setSessionRole) {
            setSessionRole(role);
-           handleRegistration(data.session, role);
+           await handleRegistration(data.session, role);
         } else {
           router.replace('/');
         }

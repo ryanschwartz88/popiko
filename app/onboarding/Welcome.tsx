@@ -12,7 +12,7 @@ export default function Welcome() {
 	const router = useRouter();
 	const focused = useNavigation().isFocused();
 	const [modalVisible, setModalVisible] = useState(false);
-	const [adminPassword, setAdminPassword] = useState('');
+	const [password, setPassword] = useState('');
 	
 
 	useEffect(() => {
@@ -30,10 +30,10 @@ export default function Welcome() {
 
 	const handleCreateAccount = async () => {
 		const { data, error} = await supabase.functions.invoke('internal-password-check', {
-			body: { adminPasswordInput: adminPassword },
+			body: { passwordInput: password },
 		});
 		if (error) {
-			Alert.alert('Invalid admin password');
+			Alert.alert('Invalid Staff password');
 		} else {
 			if (data) {
 				router.push('/auth/instructor/CreateAccount');
@@ -81,8 +81,8 @@ export default function Welcome() {
 						</Text>
 						<Input
 							placeholder="Password"
-							value={adminPassword}
-							onChangeText={(text) => setAdminPassword(text)}
+							value={password}
+							onChangeText={(text) => setPassword(text)}
 							secureTextEntry
 						/>
 						<Entypo name="chevron-with-circle-right" size={40} color="black" onPress={handleCreateAccount}/>

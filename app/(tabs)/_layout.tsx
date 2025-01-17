@@ -4,6 +4,7 @@ import * as SplashScreen from 'expo-splash-screen';
 import { FontAwesome5, MaterialCommunityIcons } from '@expo/vector-icons';
 import { useSession } from '@/hooks/account/useSession';
 import { ActivityIndicator, View } from 'react-native';
+import { supabase } from '@/hooks/account/client';
 
 export default function TabLayout() {
 	const { session, isLoading, role } = useSession();

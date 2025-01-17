@@ -8,11 +8,13 @@ import { useSession } from '@/hooks/account/useSession';
 
 export const handleRegistration = async (session: Session, role: string) => {
     try {
-        const existingStatus = await Notifications.getPermissionsAsync();
+        // TODO: Fix/ensure this works after first time
+        // Register for push notifications 
+        /* const existingStatus = await Notifications.getPermissionsAsync();
         if (existingStatus.granted || existingStatus.ios?.status === Notifications.IosAuthorizationStatus.PROVISIONAL) {
             return;
         }
-        const token = await registerForPushNotificationsAsync();
+        const token = await registerForPushNotificationsAsync(); */
         const { data, error } = await supabase
             .from('profiles')
             .update({ expo_push_token: null, role: role })
@@ -44,7 +46,14 @@ export const handleRegistration = async (session: Session, role: string) => {
             if (instructorError) {
                 console.error('Error creating instructor:', instructorError.message);
             }
-            router.replace('/');
+            if (role == 'instructor') {
+                router.replace('/instructor');
+            } else if (role == 'admin') {
+                console.log('Admin created');
+                router.replace('/admin');
+            } else {
+                router.replace('/');
+            }
         }
     } catch (error: any) {
         console.error(error);
