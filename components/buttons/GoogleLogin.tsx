@@ -5,6 +5,7 @@ import { supabase } from '@/hooks/account/client';
 import { useRouter } from 'expo-router';
 import GoogleLogo from '@/assets/images/google-icon.svg'
 import { handleRegistration } from '@/hooks/account/handleRegistration'
+import { Session } from '@supabase/supabase-js';
 
 /* 
 
@@ -55,8 +56,8 @@ export default function GoogleAuth({role, setSessionRole}: AuthProps) {
         if (error) throw error;
         if (!data.session) throw new Error('User not found');
         if (role && setSessionRole) {
-           setSessionRole(role);
-           await handleRegistration(data.session, role);
+          setSessionRole(role);
+          await handleRegistration(data.session, role);
         } else {
           router.replace('/');
         }

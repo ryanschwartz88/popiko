@@ -25,8 +25,8 @@ export const SessionProvider = ({ children }: { children: ReactNode }) => {
 				console.error('Error fetching session:', error);
 			} else {
 				setSession(data?.session || null);
+				setFinishedFetchingSession(true);
 			}
-			setFinishedFetchingSession(true);
 		};
 
 		initializeSession();
@@ -40,7 +40,6 @@ export const SessionProvider = ({ children }: { children: ReactNode }) => {
 		};
 	}, []);
 
-	// Fetch Account Data for Client portal
 	const fetchAccountData = async () => {
 		if (!session) {
 			if (finishedFetchingSession) {
@@ -108,20 +107,25 @@ export const SessionProvider = ({ children }: { children: ReactNode }) => {
 				setCurrentAccountUuid(parentData.id);
 			} catch (error) {
 				console.error('Error fetching account data:', error);
+			} finally {
+				setIsLoading(false);
 			}
+		} else {
+			setIsLoading(false);
 		}
-		setIsLoading(false);
+
 	};
 
 	// Fetch Account Data
 	useEffect(() => {
 		fetchAccountData();
-	}, [session, finishedFetchingSession]);
+	}, [session]);
 
 	// Combined Context Value
 	const contextValue = useMemo(
 		() => ({
 			session,
+			setSession,
 			isLoading,
 			role,
 			setRole,

@@ -1,0 +1,1 @@
+export const PaymentOptions = ['Monthly', 'Seasonal', 'Tuition'];

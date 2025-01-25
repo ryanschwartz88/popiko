@@ -2,8 +2,6 @@ import * as Device from 'expo-device';
 import * as Notifications from 'expo-notifications';
 import { Platform } from 'react-native';
 import Constants from 'expo-constants';
-import { supabase } from '@/hooks/account/client';
-import { useSession } from '@/hooks/account/useSession';
 
 
 Notifications.setNotificationHandler({
@@ -43,7 +41,7 @@ export default async function registerForPushNotificationsAsync() {
         }
         if (finalStatus !== 'granted') {
             handleRegistrationError('Permission not granted to get push token for push notification!');
-        return;
+            return;
         }
         const projectId = Constants?.expoConfig?.extra?.eas?.projectId ?? Constants?.easConfig?.projectId;
         if (!projectId) {

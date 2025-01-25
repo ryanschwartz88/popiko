@@ -2,8 +2,9 @@ import React, { useState } from 'react';
 import { router, Slot } from "expo-router";
 import { View, Modal, TextInput, TouchableOpacity, Text, Alert, StyleSheet, SafeAreaView, Pressable, Keyboard } from 'react-native';
 import { supabase } from '@/hooks/account/client';
-import { Entypo, MaterialIcons } from '@expo/vector-icons';
+import { AntDesign, Entypo, Feather, Ionicons, MaterialIcons } from '@expo/vector-icons';
 import Animated, { useSharedValue, useAnimatedStyle, withTiming } from 'react-native-reanimated';
+import { useSession } from '@/hooks/account/useSession';
 
 export default function Layout() {
   const [isAdmin, setIsAdmin] = useState(false);
@@ -11,6 +12,8 @@ export default function Layout() {
   const [adminPassword, setAdminPassword] = useState('');
   const progress = useSharedValue(0); // Shared value for animation progress
   const slideProgress = useSharedValue(0); // Shared value for slide-up menu
+  const { setRole } = useSession();
+
 
   const handleOpenAdmin = async () => {
     const { data, error } = await supabase.functions.invoke('admin-password-check', {
@@ -83,7 +86,7 @@ export default function Layout() {
       <Slot />
 
       {/* Sliding Navigation Menu */}
-      <Animated.View style={[styles.menu, menuStyle]}>
+      {isAdmin && <Animated.View style={[styles.menu, menuStyle]}>
         <TouchableOpacity
           style={styles.menuButton}
           onPress={() => router.push('/admin/client')}
@@ -102,7 +105,17 @@ export default function Layout() {
         >
           <MaterialIcons name="dashboard" size={40} color="white" />
         </TouchableOpacity>
-      </Animated.View>
+        <TouchableOpacity
+          style={styles.menuButton}
+          onPress={async () => {
+            setRole('');
+            await supabase.auth.signOut();
+            router.replace('/onboarding/Welcome');
+          }}
+        >
+          <Feather name="log-out" size={40} color="white" />
+        </TouchableOpacity>
+      </Animated.View>}
 
       {/* Floating Animated Icon */}
       <TouchableOpacity onPress={handleIconPress} style={styles.iconContainer}>
@@ -149,7 +162,7 @@ export default function Layout() {
 const styles = StyleSheet.create({
   menu: {
     position: 'absolute',
-    bottom: 100,
+    bottom: 110,
     left: 30,
     backgroundColor: '#007bff',
     borderRadius: 50,
@@ -157,7 +170,8 @@ const styles = StyleSheet.create({
   menuButton: {
     flexDirection: 'row',
     alignItems: 'center',
-    padding: 10,
+    paddingHorizontal: 10,
+    paddingVertical: 12,
   },
   iconContainer: {
     position: 'absolute',

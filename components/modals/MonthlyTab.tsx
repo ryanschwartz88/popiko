@@ -21,11 +21,10 @@ const MonthlyTab: React.FC = () => {
 	const [activeYear, setActiveYear] = useState<string | null>(new Date().getFullYear().toString());
 	const { accountData, session } = useSession();
 
-	const startDate = new Date(accountData?.created_at || new Date());
-
-	if (!session) {
+	if (!session || !accountData) {
 		return null;
 	}
+	const startDate = new Date(accountData?.created_at);
 	
 	const allCharges: Charge[] = useCharges(session.user.id, startDate);
 

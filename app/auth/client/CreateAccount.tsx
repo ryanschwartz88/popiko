@@ -25,8 +25,7 @@ export default function CreateAccount() {
       const {data, error} = await supabase.auth.signUp({email, password});
       if (error) throw error;
       if (!data.session) throw new Error('User not found');
-      handleRegistration(data.session, 'parent');
-      router.replace('/'); 
+      await handleRegistration(data.session, 'parent');
     } catch (error) {
       setAlertVisible(true);
     } finally {
@@ -36,6 +35,7 @@ export default function CreateAccount() {
   
   return (
     <Pressable style={styles.container} onPress={() => {Keyboard.dismiss()}}>
+      <BackButton />
       <Text style={styles.title}>Create an Account</Text>
       <View style={[styles.verticallySpaced, styles.mt20]}>
         <Input

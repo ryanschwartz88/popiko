@@ -2,6 +2,7 @@ import { Session } from '@supabase/supabase-js';
 
 export interface SessionContextType {
     session: Session | null;
+    setSession: (session: Session | null) => void;
     isLoading: boolean;
 }
 

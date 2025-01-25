@@ -8,7 +8,7 @@ import {
   ScrollView,
 } from "react-native";
 import { sections } from "@/constants/childrenSkills";
-import { Feather, Ionicons, MaterialIcons } from "@expo/vector-icons";
+import { Feather, MaterialIcons } from "@expo/vector-icons";
 
 interface ReviewModalProps {
   lastSkill: string | undefined;
@@ -30,6 +30,12 @@ const ReviewModal: React.FC<ReviewModalProps> = ({ lastSkill, skillGroup }) => {
     (section, index) => index <= skillGroupIndex
   );
 
+  const lastSection = sections[currentSectionIndex];
+  const lastObtainedSkill = lastSection.units
+		.flatMap((unit) => unit.skills)
+		.find((skill) => skill.name === lastSkill);
+	const indexOfLastObtainedSkill = lastObtainedSkill ? lastObtainedSkill.index : 0;
+  //todo fix the last available skill if not completed whole section.
   const handleToggleSection = (sectionTitle: string) => {
     if (selectedSections.includes(sectionTitle)) {
       setSelectedSections((prev) =>
@@ -171,7 +177,7 @@ const ReviewModal: React.FC<ReviewModalProps> = ({ lastSkill, skillGroup }) => {
         <View style={styles.modalOverlay}>
             <View style={styles.modalContent}>
             <TouchableOpacity
-              style={styles.closeButton}
+              style={styles.xButton}
               onPress={() => setSectionSelectionVisible(false)}
             >
               <MaterialIcons name="close" size={24} color="black" />
@@ -518,6 +524,9 @@ const styles = StyleSheet.create({
     fontSize: 18,
     fontWeight: 'bold',
   },
+  xButton: {
+    alignSelf: 'flex-end',
+  }
 });
 
 export default ReviewModal;

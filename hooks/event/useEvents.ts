@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 import { CalendarEvent } from "@/types/event";
 import { weekdaySchedule, weekendSchedule } from "@/constants/schedule";
 
-export const useEvents = (startDate: Date, endDate?: Date, instructorAccount: boolean = false) => {
+export const useEvents = (startDate: Date, endDate?: Date) => {
     const { session } = useSession();
     const [events, setEvents] = useState<CalendarEvent[]>([]);
 
@@ -89,7 +89,7 @@ export const useEvents = (startDate: Date, endDate?: Date, instructorAccount: bo
         };
 
         fetchAllEvents();
-    }, [session, instructorAccount]);
+    }, [session]);
 
     return events;
 };

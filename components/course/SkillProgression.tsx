@@ -108,9 +108,9 @@ const SwimProgress: React.FC<{ skillGroup: string | undefined, lastSkill: string
 							skillIndexCounter += 1; // Increment the local counter
 	
 							return (
-								<>
+								<React.Fragment key={`${skill.name}-${sectionIndex}`}>
 									<View
-										key={`skill-${skill.index}-${skill.name}`} 
+										key={`${skill.name}-${sectionIndex}`} 
 										style={{
 											transform: [
 												{ translateX: offsetX },
@@ -126,7 +126,7 @@ const SwimProgress: React.FC<{ skillGroup: string | undefined, lastSkill: string
 									{skill.index === indexOfLastObtainedSkill && (
 										<ReviewButton lastSkill={lastSkill} skillGroup={skillGroup}/>
 									)}
-								</>
+								</React.Fragment>
 							);
 						}
 					)}

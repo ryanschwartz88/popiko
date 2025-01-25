@@ -15,7 +15,6 @@ export default function CreateAccount() {
   const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
   const [alertVisible, setAlertVisible] = useState(false);
-  const [adminPassword, setAdminPassword] = useState('');
   const [instructorRole, setInstructorRole] = useState('admin');
   const { setRole } = useSession();
   

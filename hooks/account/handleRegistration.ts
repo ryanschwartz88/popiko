@@ -3,28 +3,32 @@ import registerForPushNotificationsAsync from '@/hooks/account/useExpoPush';
 import { supabase } from '@/hooks/account/client';
 import { Session } from '@supabase/supabase-js';
 import { router } from 'expo-router';
-import { useSession } from '@/hooks/account/useSession';
 
 
 export const handleRegistration = async (session: Session, role: string) => {
     try {
         // TODO: Fix/ensure this works after first time
         // Register for push notifications 
-        /* const existingStatus = await Notifications.getPermissionsAsync();
-        if (existingStatus.granted || existingStatus.ios?.status === Notifications.IosAuthorizationStatus.PROVISIONAL) {
-            return;
-        }
-        const token = await registerForPushNotificationsAsync(); */
-        const { data, error } = await supabase
-            .from('profiles')
-            .update({ expo_push_token: null, role: role })
-            .eq('id', session.user.id)
-            .single();
-
-        if (error) {
+        const existingStatus = await Notifications.getPermissionsAsync();
+        if (existingStatus.granted || existingStatus.ios?.status === Notifications.IosAuthorizationStatus.AUTHORIZED) {
+            const { error } = await supabase
+                .from('profiles')
+                .update({ role: role })
+                .eq('id', session.user.id)
+                .single();
+            if (error) {
                 console.error('Error updating push token:', error.message);
-        } else {
-                console.log('Push token updated:', data);
+            }
+        } else if (existingStatus.canAskAgain) {
+            const token = await registerForPushNotificationsAsync();
+            const { error } = await supabase
+                .from('profiles')
+                .update({ expo_push_token: token, role: role })
+                .eq('id', session.user.id)
+                .single();
+            if (error) {
+                console.error('Error updating push token:', error.message);
+            }
         }
 
         if (role == 'parent') {
@@ -36,7 +40,10 @@ export const handleRegistration = async (session: Session, role: string) => {
             if (parentError) {
                 console.error('Error creating parent:', parentError.message);
             }
-            router.replace('/onboarding/client/UserInfo');
+            router.replace({
+                pathname: '/admin/client/[id]',
+                params: { id: session.user.id },
+            });
         } else if (role == 'instructor' || role == 'admin') {
             const { data: instructorData, error: instructorError } = await supabase
                 .from('instructors')

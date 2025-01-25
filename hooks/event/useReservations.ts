@@ -6,8 +6,8 @@ import { isWithinInterval, addMinutes } from 'date-fns';
 import { v4 as uuidv4 } from 'uuid';
 
 
-
 /* 
+    Legacy hook:
     This hook fetches recurring reservations from Supabase
     it will only be used for admin when onboarding new clients
 
@@ -24,7 +24,7 @@ export const useReservations = (startDate: Date, endDate: Date) => {
         if (session) {
             const { data, error } = await supabase
                 .from('recurring_reservations')
-                .select('user_id, start, end, day_of_week, child_id, skill_group, private, instructor_id');
+                .select('user_id, start, end, day_of_week, child_id, private, instructor_id');
 
             if (error) {
                 console.error('Error fetching events:', error);
@@ -42,7 +42,7 @@ export const useReservations = (startDate: Date, endDate: Date) => {
                         const endDateTime = new Date(`${occurrenceDate.toISOString().split('T')[0]}T${event.end}`);
                         const isCurrentUser = event.user_id === session?.user.id;
 
-                        occurrences.push({
+                        /* occurrences.push({
                                 id: event.user_id,
                                 title: `${formatTime(startDateTime)} to ${formatTime(endDateTime)}`,
                                 start: startDateTime,
@@ -51,7 +51,7 @@ export const useReservations = (startDate: Date, endDate: Date) => {
                                 childID: event.child_id,
                                 skill_group: event.skill_group,
                                 instructorID: event.instructor_id
-                            });
+                            }); */
 
                         // Increment the date by 7 days for the next occurrence
                         occurrenceDate.setDate(occurrenceDate.getDate() + 7);
@@ -115,7 +115,7 @@ export const useReservations = (startDate: Date, endDate: Date) => {
             for (let date = new Date(startDate); date <= endDate; date.setDate(date.getDate() + 1)) {
                 const currentDayName = date.toLocaleDateString('en-US', { weekday: 'short' });
 
-                for (const schedule of schedules) {
+                /* for (const schedule of schedules) {
                     if (schedule.days.includes(currentDayName)) {
                         for (const timeSlot of generateTimeSlots(date, schedule.times, schedule.duration)) {
                             if (isTimeSlotAvailable(filteredEvents, timeSlot.start, timeSlot.end)) {
@@ -129,7 +129,7 @@ export const useReservations = (startDate: Date, endDate: Date) => {
                             }
                         }
                     }
-                }
+                } */
             }
 
 

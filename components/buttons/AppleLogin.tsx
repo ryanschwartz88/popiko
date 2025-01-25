@@ -6,6 +6,7 @@ import { useRouter } from 'expo-router'
 import CustomAlert from '@/components/modals/ErrorAlert'
 import Icon from 'react-native-vector-icons/FontAwesome'
 import { handleRegistration } from '@/hooks/account/handleRegistration'
+import { Session } from '@supabase/supabase-js'
 
 /* 
 TODO: Handle apple sign in error
@@ -42,7 +43,7 @@ export default function AppleAuth({role, setSessionRole}: AuthProps) {
             if (!data.session) throw new Error('User not found');
             if (role && setSessionRole) {
               setSessionRole(role);
-              handleRegistration(data.session, role);
+              await handleRegistration(data.session, role);
             } else {
               router.replace('/');
             };
