@@ -3,12 +3,12 @@ import {
 	SectionList,
 	StyleSheet,
 	Text,
+	TouchableOpacity,
 	View,
 	ViewToken,
 } from "react-native";
 import { sections } from "@/constants/childrenSkills";
 import WaterSkill from "@/components/course/WaterSkill";
-import ReviewButton from "@/components/course/ReviewButton";
 
 const shadesOfBlue = ["#007AFF", "#0056D2", "#0046AA", "#003580", "#002966"];
 
@@ -104,29 +104,27 @@ const SwimProgress: React.FC<{ skillGroup: string | undefined, lastSkill: string
 								totalSkills,
 								100, // Sine wave amplitude
 							);
+
+							const skillButtonRef = useRef<TouchableOpacity>(null);
 	
 							skillIndexCounter += 1; // Increment the local counter
 	
 							return (
-								<React.Fragment key={`${skill.name}-${sectionIndex}`}>
-									<View
-										key={`${skill.name}-${sectionIndex}`} 
-										style={{
-											transform: [
-												{ translateX: offsetX },
-											],
-											zIndex: totalSkills - sectionIndex,
-										}}
-									>
-										<WaterSkill
-											skill={skill}
-											locked={indexOfLastObtainedSkill < skill.index}
-										/>
-									</View>
-									{skill.index === indexOfLastObtainedSkill && (
-										<ReviewButton lastSkill={lastSkill} skillGroup={skillGroup}/>
-									)}
-								</React.Fragment>
+								<View
+									key={`${skill.name}-${sectionIndex}`} 
+									style={{
+										transform: [
+											{ translateX: offsetX },
+										],
+										zIndex: totalSkills - sectionIndex,
+									}}
+								>
+									<WaterSkill
+										skill={skill}
+										locked={indexOfLastObtainedSkill < skill.index}
+										buttonRef={skillButtonRef}
+									/>
+								</View>
 							);
 						}
 					)}

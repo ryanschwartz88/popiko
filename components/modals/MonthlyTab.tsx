@@ -11,7 +11,7 @@ import { MaterialIcons } from '@expo/vector-icons';
 import { useCharges } from '@/hooks/payments/useCharges';
 import { Charge } from '@/types/charge';
 import { useSession } from '@/hooks/account/useSession';
-import { format, startOfMonth, endOfMonth, subMonths, addMonths } from 'date-fns';
+import { format, startOfMonth, endOfMonth, subMonths } from 'date-fns';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 const MonthlyTab: React.FC = () => {

@@ -11,6 +11,7 @@ const CourseScreen = () => {
     const parentAccount = currentAccountUuid === session?.user.id;
 
     const dropdownButtonRef = useRef(null);
+    const skillButtonRef = useRef(null);
 
     const { last_obtained_skill, skill_group} = useMemo(() => {
         const currentAccount = accountData?.accounts.find((account) => account.id === currentAccountUuid);

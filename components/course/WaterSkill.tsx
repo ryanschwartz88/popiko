@@ -1,69 +1,97 @@
 import React, { useState } from "react";
 import {
+  Dimensions,
   Modal,
-  Pressable,
   StyleSheet,
   Text,
   TouchableOpacity,
   View,
+  LayoutRectangle,
 } from "react-native";
 import { FontAwesome, MaterialIcons } from "@expo/vector-icons";
+
+const screenWidth = Dimensions.get("window").width;
 
 const WaterSkill = ({
   skill,
   locked,
+  buttonRef,
 }: {
-  skill: { name: string };
+  skill: { name: string; description: string; index: number };
   locked: boolean;
+  buttonRef: React.RefObject<TouchableOpacity>;
 }) => {
   const [modalVisible, setModalVisible] = useState(false);
+  const [buttonLayout, setButtonLayout] = useState<LayoutRectangle | null>(null);
 
   const handlePress = () => {
-    if (locked) return;
-    setModalVisible(true);
-  };
-
-  const closeModal = () => {
-    setModalVisible(false);
+    if (!buttonRef?.current) return;
+    buttonRef.current.measureInWindow((x, y, width, height) => {
+      setButtonLayout({ x, y, width, height });
+      setModalVisible(true);
+    });
   };
 
   return (
     <>
-      <Pressable
+      <TouchableOpacity
         onPress={handlePress}
+        ref={buttonRef}
         style={[
           styles.skillCircle,
           { backgroundColor: locked ? "#ccc" : "#007AFF" },
         ]}
       >
-        <FontAwesome
-          name={locked ? "lock" : "star"}
-          size={24}
-          color="#fff"
-        />
-      </Pressable>
+        <FontAwesome name={locked ? "lock" : "star"} size={24} color="#fff" />
+      </TouchableOpacity>
 
-      <Modal
-        animationType="fade"
-        transparent={true}
-        visible={modalVisible}
-        onRequestClose={() => setModalVisible(!modalVisible)}
-      >
-        <View style={styles.centeredView}>
-          <View style={styles.modalView}>
+      {modalVisible && buttonLayout && (
+        <Modal
+          animationType="fade"
+          transparent={true}
+          visible={modalVisible}
+          onRequestClose={() => setModalVisible(false)}
+        >
+          <View style={styles.overlay}>
             <TouchableOpacity
-              style={styles.closeButton}
+              style={StyleSheet.absoluteFill}
               onPress={() => setModalVisible(false)}
+            />
+            {/* Pointer (Triangle) */}
+            <View
+              style={[
+                styles.pointer,
+                {
+                  top: buttonLayout.y + buttonLayout.height + 5, // Position right below the button
+                  left: buttonLayout.x + buttonLayout.width / 2 - 10, // Center the triangle
+                },
+              ]}
+            />
+            {/* Modal Background */}
+            <View
+              style={[
+                styles.relativeModal,
+                {
+                  top: buttonLayout.y + buttonLayout.height + 15, // Slightly below the pointer
+                  left: screenWidth * 0.1, // Center horizontally (80% width)
+                  width: screenWidth * 0.8,
+                },
+              ]}
             >
-              <MaterialIcons name="close" size={24} color="black" />
-            </TouchableOpacity>
-            <Text style={styles.modalText}>{skill.name}</Text>
-            <Text style={styles.skillStatus}>
-              {locked ? "This skill is locked." : "This skill is unlocked!"}
-            </Text>
+              <TouchableOpacity
+                style={styles.closeButton}
+                onPress={() => setModalVisible(false)}
+              >
+                <MaterialIcons name="close" size={24} color="black" />
+              </TouchableOpacity>
+              <Text style={styles.modalText}>{skill.name}</Text>
+              <Text style={styles.skillStatus}>
+                {locked ? "This skill is locked." : skill.description}
+              </Text>
+            </View>
           </View>
-        </View>
-      </Modal>
+        </Modal>
+      )}
     </>
   );
 };
@@ -77,36 +105,28 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     margin: 10,
   },
-  modalOverlay: {
+  overlay: {
     flex: 1,
     backgroundColor: "rgba(0, 0, 0, 0.5)",
-    justifyContent: "center",
-    alignItems: "center",
   },
-  modalContent: {
-    width: 300,
-    padding: 20,
-    backgroundColor: "#fff",
-    borderRadius: 10,
-    alignItems: "center",
+  pointer: {
+    position: "absolute",
+    width: 0,
+    height: 0,
+    borderLeftWidth: 10,
+    borderRightWidth: 10,
+    borderBottomWidth: 10,
+    borderStyle: "solid",
+    borderLeftColor: "transparent",
+    borderRightColor: "transparent",
+    borderBottomColor: "white", // Match modal background color
+    zIndex: 100,
   },
-  modalTitle: {
-    fontSize: 18,
-    fontWeight: "bold",
-    marginBottom: 15,
-  },
-  centeredView: {
-    flex: 1,
-    justifyContent: "flex-end",
-  },
-  modalView: {
+  relativeModal: {
+    position: "absolute",
     backgroundColor: "white",
-    minHeight: "90%",
-    borderTopEndRadius: 20,
-    borderTopStartRadius: 20,
-    padding: 35,
-    alignItems: "center",
-    width: "100%",
+    padding: 20,
+    borderRadius: 10,
     shadowColor: "#000",
     shadowOffset: {
       width: 0,
@@ -117,20 +137,19 @@ const styles = StyleSheet.create({
     elevation: 5,
   },
   closeButton: {
-    alignSelf: "flex-end",
     position: "absolute",
-    top: 20,
-    right: 20,
+    top: 10,
+    right: 10,
   },
   modalText: {
-    marginBottom: 15,
-    textAlign: "center",
-    fontSize: 24,
+    marginBottom: 10,
+    fontSize: 18,
     fontWeight: "bold",
+    textAlign: "center",
   },
   skillStatus: {
-    marginTop: 15,
-    fontSize: 18,
+    marginTop: 10,
+    fontSize: 14,
     textAlign: "center",
   },
 });

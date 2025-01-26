@@ -11,9 +11,6 @@ export default function TabLayout() {
 
 	useEffect(() => {
 		async function prepare() {
-			// Keep the splash screen visible while loading
-			await SplashScreen.preventAutoHideAsync();
-
 			// Simulate any necessary loading (e.g., fetching assets or data)
 			if (!isLoading) {
 				setAppIsReady(true);
@@ -30,7 +27,7 @@ export default function TabLayout() {
 		}
 	}, [appIsReady]);
 
-	if (!appIsReady) {
+	if (!appIsReady || !role) {
 		// Keep splash screen visible while loading
 		return (
 			<View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>

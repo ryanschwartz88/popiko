@@ -8,11 +8,21 @@ import {
   Button,
 } from 'react-native';
 import { CalendarEvent } from '@/types/event';
+import { MaterialIcons } from '@expo/vector-icons';
+import { Child } from '@/types/client';
+import { useSession } from '@/hooks/account/useSession';
+import { router } from 'expo-router';
+
 
 const AgendaItem = ({ item }: { item: CalendarEvent }) => {
-  const buttonPressed = useCallback(() => {
-    Alert.alert('NOOOOOO');
-  }, []);
+  const { setCurrentAccountUuid } = useSession();
+  
+  const handlePress = () => {
+    router.push(`/course`);
+    if (item.childID) {
+      setCurrentAccountUuid(item.childID);
+    }
+  };
 
   if (!item) {
     return (
@@ -30,14 +40,14 @@ const AgendaItem = ({ item }: { item: CalendarEvent }) => {
 
 
   return (
-    <TouchableOpacity activeOpacity={1.0} style={styles.item}>
+    <TouchableOpacity activeOpacity={1.0} style={styles.item} onPress={handlePress}>
       <View>
         <Text style={styles.itemHourText}>{startTime.toLowerCase()}</Text>
         <Text style={styles.itemDurationText}>30m</Text>
       </View>
       <Text style={styles.itemTitleText}>{item.title}</Text>
       <View style={styles.itemButtonContainer}>
-        <Button color="grey" title="Reschedule" onPress={buttonPressed} />
+        <MaterialIcons name="chevron-right" size={24} color="black" />
       </View>
     </TouchableOpacity>
   );
