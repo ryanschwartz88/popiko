@@ -12,6 +12,7 @@ export interface CalendarEvent {
   childName?: string;
   instructorName?: string;
   available_instructor?: Instructor[];
+  last_obtained_skill?: string;
 }
 
 export interface Instructor {

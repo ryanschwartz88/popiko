@@ -77,14 +77,13 @@ const CalendarScreen = () => {
 			<CalendarProvider
 				date={today.toLocaleDateString('en-CA')}
 				showTodayButton={markedDates[today.toLocaleDateString('en-CA')]?.marked}
+				todayButtonStyle={styles.todayButton}
 				style={styles.calendar}
 			>
 				<ExpandableCalendar
 					horizontal={true} 
 					initialPosition={ExpandableCalendar.positions.CLOSED} 
 					firstDay={1} 
-					leftArrowImageSource={undefined} 
-					rightArrowImageSource={undefined} 
 					allowShadow={false} 
 					openThreshold={70} 
 					closeThreshold={40} 
@@ -102,9 +101,9 @@ const CalendarScreen = () => {
 				/>
 				{groupedEvents.length > 0 ? (
 					<AgendaList
-					sections={groupedEvents}
-					renderItem={renderItem}
-					sectionStyle={styles.section}
+						sections={groupedEvents}
+						renderItem={renderItem}
+						sectionStyle={styles.section}
 					/>
 				) : (
 					<Text style={styles.section}>No Scheduled Events</Text>
@@ -141,4 +140,12 @@ calendar: {
 	backgroundColor: '#fff',
 	flex: 1,
 },
+todayButton: {
+	position: 'absolute',
+	bottom: 40,
+	right: 40,
+	backgroundColor: '#007BFF',
+	borderRadius: 50,
+	padding: 10,
+}
 });

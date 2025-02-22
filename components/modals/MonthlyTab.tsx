@@ -26,7 +26,7 @@ const MonthlyTab: React.FC = () => {
 	}
 	const startDate = new Date(accountData?.created_at);
 	
-	const allCharges: Charge[] = useCharges(session.user.id, startDate);
+	const allCharges: Charge[] = useCharges(session.user.id, session, startDate);
 
 	// Generate months grouped by year from account creation to now
 	const groupedMonths = useMemo(() => {

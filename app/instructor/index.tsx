@@ -17,7 +17,7 @@ const CalendarScreen = () => {
 	const { session } = useSession();
 
 	const today = useMemo(() => new Date(), []);
-	const events: CalendarEvent[] = useEvents(today, undefined, true);
+	const events: CalendarEvent[] = useEvents(today, undefined);
 
 	// Filter events for the current account
 	const filteredEvents = useMemo(() => {

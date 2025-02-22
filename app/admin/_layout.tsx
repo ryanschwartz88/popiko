@@ -95,12 +95,6 @@ export default function Layout() {
         </TouchableOpacity>
         <TouchableOpacity
           style={styles.menuButton}
-          onPress={() => router.push('/admin/calendar')}
-        >
-          <MaterialIcons name="calendar-today" size={40} color="white" />
-        </TouchableOpacity>
-        <TouchableOpacity
-          style={styles.menuButton}
           onPress={() => router.push('/admin')}
         >
           <MaterialIcons name="dashboard" size={40} color="white" />

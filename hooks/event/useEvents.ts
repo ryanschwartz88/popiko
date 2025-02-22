@@ -14,7 +14,7 @@ export const useEvents = (startDate: Date, endDate?: Date) => {
                 .from('bookings')
                 .select(`
                     *,
-                    children(name),
+                    children(name, last_obtained_skill),
                     instructor:instructors(name)
                 `);
             if (endDate?.getDate() === startDate.getDate()) {
@@ -51,7 +51,9 @@ export const useEvents = (startDate: Date, endDate?: Date) => {
                         private: booking.private,
                         instructorID: booking.instructor_id,
                         childName: booking.children.name,
+                        last_obtained_skill: booking.children.last_obtained_skill,
                         instructorName: booking.instructor.name
+
                     };
                 });
     
@@ -69,7 +71,7 @@ export const useEvents = (startDate: Date, endDate?: Date) => {
 
             const bookings = await fetchBookings();
 
-            const summerMonths = [5, 6, 7]; // June - August
+            /* const summerMonths = [5, 6, 7]; // June - August
             const isSummer = summerMonths.includes(startDate.getMonth());
 
             const schedules = isSummer
@@ -81,11 +83,11 @@ export const useEvents = (startDate: Date, endDate?: Date) => {
                 const eventDay = eventDate.toLocaleDateString('en-US', { weekday: 'short' });
                 
                 return schedules.some(schedule => schedule.days.includes(eventDay));
-            });
+            }); */
 
 
 
-            setEvents(filteredEvents);
+            setEvents(bookings);
         };
 
         fetchAllEvents();

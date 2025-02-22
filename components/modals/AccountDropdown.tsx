@@ -80,7 +80,7 @@ const AccountDropdown: React.FC<{ buttonRef: RefObject<TouchableOpacity> }> = ({
 								/>
 								<View>
 									<Text style={styles.currentAccountText}>{currentAccount?.name}</Text>
-									<Text style={styles.currentAccountSubText}>Skill Group: {currentAccount?.skill_group}</Text>
+									{currentAccountUuid != accountData?.accounts[0].id && <Text style={styles.currentAccountSubText}>Skill Group: {currentAccount?.skill_group}</Text>}
 								</View>
 							</View>
 							<View style={styles.divider} />
